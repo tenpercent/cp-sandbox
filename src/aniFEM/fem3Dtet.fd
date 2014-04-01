@@ -1,0 +1,111 @@
+C ======================================================================
+C               FINITE ELEMENTS
+C ======================================================================
+      Integer   FEM_P0,     FEM_P1,     FEM_P2,     FEM_P3
+      Parameter(FEM_P0 = 1, FEM_P1 = 2, FEM_P2 = 3, FEM_P3 = 4)
+
+      Integer   FEM_P0vector,      FEM_P1vector,      FEM_P2vector
+      Parameter(FEM_P0vector = 10, FEM_P1vector = 11, FEM_P2vector = 12)
+
+      Integer   FEM_P2reduced,      FEM_MINI
+      Parameter(FEM_P2reduced = 13, FEM_MINI = 14)
+
+      Integer   FEM_RT0,      FEM_RT1,      FEM_BDM1
+      Parameter(FEM_RT0 = 21, FEM_RT1 = 22, FEM_BDM1 = 23)
+
+      Integer   FEM_ND0,      FEM_ND1
+      Parameter(FEM_ND0 = 25, FEM_ND1 = 26)
+
+      Integer   FEM_CR1,      FEM_CR1vector
+      Parameter(FEM_CR1 = 31, FEM_CR1vector = 32)
+
+      Integer   FEM_P1DG
+      Parameter(FEM_P1DG = 41)
+
+      Integer   MaxSize
+      Parameter(MaxSize = 34)
+
+
+C ======================================================================
+C               OPERATORS
+C ======================================================================
+      Integer   IDEN,     GRAD,     DIV,     CURL
+      Parameter(IDEN = 1, GRAD = 2, DIV = 3, CURL = 4)
+
+      Integer   DUDX,     DUDY,     DUDZ
+      Parameter(DUDX = 6, DUDY = 7, DUDZ = 8)
+
+C ======================================================================
+C               TENSOR INFORMATION
+C ======================================================================
+      Integer   TENSOR_NULL,     TENSOR_SCALAR
+      Parameter(TENSOR_NULL = 1, TENSOR_SCALAR = 2)
+
+      Integer   TENSOR_SYMMETRIC,     TENSOR_GENERAL     
+      Parameter(TENSOR_SYMMETRIC = 3, TENSOR_GENERAL = 4) 
+
+
+C ======================================================================
+C               DEGREES OF FREEDOM
+C ======================================================================
+      Integer   Vdof,     Fdof,     Rdof,     Edof
+      Parameter(Vdof = 1, Fdof = 2, Rdof = 3, Edof = 4)
+
+      Integer   FdofOrient,     RdofOrient
+      Parameter(FdofOrient = 5, RdofOrient = 6)
+
+
+C ======================================================================
+C               NUMERICAL INTEGRATION PARAMETERS
+C ======================================================================
+C  MaxPointGauss = the maximal number of Gauss points
+C ======================================================================
+      Integer   LDG1,     LDG2,     LDG3,     LDG5,      LDG6
+      Parameter(LDG1 = 1, LDG2 = 4, LDG3 = 8, LDG5 = 15, LDG6 = 24)
+
+      Integer   MaxPointGauss, AllPointGauss
+      Parameter(MaxPointGauss = LDG6)
+      Parameter(AllPointGauss = LDG1 + LDG2 + LDG3 + LDG5 + LDG6) 
+
+c ... order = 1 (1 point)
+      Real*8    T1A, W1A
+      Parameter(T1A = 0.25D0, W1A = 1D0)
+
+c ... order = 2 (4 points)
+      Real*8    T2A, T2B, W2A
+      Parameter(T2A = 0.13819660112501D0, T2B = 0.58541019662497D0)
+      Parameter(W2A = 0.25D0)
+
+c ... order = 3 (4 + 4 points)
+      Real*8    T3A, T3B, T3C, T3D, W3A, W3B
+      Parameter(T3A = 0D0,     T3B = 1D0,     W3A =-0.01666666666667D0)
+      Parameter(T3C = 0.125D0, T3D = 0.625D0, W3B = 0.26666666666667D0)
+   
+c ... order = 5 (1 + 4 + 4 + 6 points)
+      Real*8    T5A, T5B, T5C, T5D, T5E, T5F, T5G, W5A, W5B, W5C, W5D
+      Parameter(T5A = 0.25D0, W5A = 0.11851851851852D0)
+
+      Parameter(T5B = 0.09197107805272D0, T5C = 0.72408676584183D0) 
+      Parameter(W5B = 0.07193708377902D0)
+
+      Parameter(T5D = 0.31979362782963D0, T5E = 0.04061911651111D0)
+      Parameter(W5C = 0.06906820722627D0)
+
+      Parameter(T5F = 0.05635083268963D0, T5G = 0.44364916731037D0)
+      Parameter(W5D = 0.05291005291005D0)
+
+c ... order = 6 (4 + 4 + 4 + 12 points)
+      Real*8    T6A, T6B, T6C, T6D, T6E, T6F, T6G, T6H, T6I
+      Real*8    W6A,      W6B,      W6C,      W6D
+      Parameter(T6A = 0.3561913862225449D0, T6B = 0.2146028712591517D0)
+      Parameter(W6A = 0.0399227502581679D0)
+
+      Parameter(T6C = 0.8779781243961660D0, T6D = 0.0406739585346113D0)
+      Parameter(W6B = 0.0100772110553207D0)
+
+      Parameter(T6E = 0.0329863295731731D0, T6F = 0.3223378901422757D0)
+      Parameter(W6C = 0.0553571815436544D0)
+
+      Parameter(T6G = 0.2696723314583159D0, T6H = 0.6030056647916491D0)
+      Parameter(T6I = 0.0636610018750175D0)
+      Parameter(W6D = 0.0482142857142857D0)

@@ -1,0 +1,100 @@
+Author:  A Danilov  <a.a.danilov@gmail.com>
+Date:    Mon Feb 15, 2010
+Package: AniAFT
+Details: fixed a bug in src/aniAFT/src/aniFRT/PRM/tria32.c. Now interface with opencascade is
+more robust.
+
+Author:  K Lipnikov <lipnikov@gmail.com>
+Date:    Sat Feb 6, 2010
+Package: Tutorials
+Details: Added a new tutorial Elasticity. It describes adaptive solution
+of a linear elasticity problem in the displacement forlumation in a non-convex 
+polyhedral domain.
+
+
+Author:  K Lipnikov <lipnikov@gmail.com>
+Date:    Sat Jan 30, 2010
+Package: AniFEM, PackageFEM
+Details: Added support for various types of boundary conditions, inluding
+non-homogeneous Neumann and Robin boundary conditions. A two-dimensional 
+integrals are calculated using the code from library Ani2D-2.4.
+
+
+Author:  A Danilov  <a.a.danilov@gmail.com>
+Date:    Sun Jan 24, 2010
+Package: AniAFT
+Details: fixed bug #2895603 found by one of the users. The vertex indexing 
+was messed up in SCG code in aniAFT. Now the indexing starts from 1.
+Also fixed memory leaks in aniAFT.
+
+
+Author:  A Danilov  <a.a.danilov@gmail.com>
+Date:    Sun Jan 24, 2010
+Package: AniAFT
+Details: Great improvement in interaction with OpenCascade. Switched to
+the new version of CGM called CGMA. 
+Also, added native support for STEP/IGES formats, support for periodic 
+surfaces, and support for internal slits.
+
+
+Author:  A Danilov  <a.a.danilov@gmail.com>
+Date:    Sun Jan 24, 2010
+Package: AniAFT
+Details: Fixed several bugs in computational geometry for parametric 
+surfaces. Implemented a new intersection check technique. 
+Improved internal logic.
+
+
+Author:  K Lipnikov <lipnikov@gmail.com>
+Date:    Sat Jan 9, 2010
+Package: AniLMR
+Details: Restructured and cleaned package aniLMR following the structure
+of the two-dimensional code.
+
+
+* 04/04/2009 Version 2.2.1 was released
+
+- added a Tutorial on hybrid mixed finite elements
+- fixed an error in ZZ interpolation; not all boundary points were marked
+- fixed an error in assembling Raviart-Thomas and Nedelec  mass matrices 
+- fixed wrong pointers to groups of unknowns in assembling rectangular matrices.
+- added a missing loop in assembling template blocks for face unknowns.
+
+* 08/02/2009 Version 2.2 was released
+
+- added Tutorials/PackageVIEW
+- replaced data/aft.out with a better mesh
+- added routine mba_FixShape() to package aniMBA. It improves shape-regularity of the input mesh. 
+- rewrote packages aniAFT and CGM. It improved robustness of the Advanced Front Technique.
+- added test StokesNavier, a lid driven cavity, to Tutorials/MultiPackage. 
+  This name puts this test at the end of the list.
+- added two tests in PackageINB illustrating features of the package aniINB.
+- added package aniINB for inexact Newton-Krylov backtracking nonlinear solver. 
+- increased size of numeric(2) and symbolic(2) in F77 wrappers of direct solver. 
+  It fixes memory problems for 64-bit machines.
+- updated and improved documentation
+
+
+* 06/07/2008 Version 2.1 was released
+
+- updated aniAFT
+- added aniRCB
+- removed metric generation from library aniMBA 
+- added package aniLMR (Local Metric Recovery)
+- fixed bugs related to unitialized arrays in bcg.f
+- fixed a bug in metric calculation related to zero Hessian
+- fixed a bug (swapR) related to checking out of defined zone in iNPs
+- fixed uniformRefinement, localRefinement to control shape
+- extended uniformRefinement to localRefinement
+- fixed zero memory pointer in template.f
+- fixed dimension of lbP(4) in mainTemplate.f
+- fixed a bug iP5 in place of iP4 in assemble.f 
+- fixed division by zero fixed volume and area in ani2.f
+- fixed a bug in calculating average quality
+- order of topological operation can be changed in operat.fd
+- implemented new topological operation: edge collapse
+- code cleaning, documenting and enforcing Fortran standards
+
+* 07/01/2007 Version 2.0 was released (first public release)
+
+* 28/11/2001 Version 1.0 was released

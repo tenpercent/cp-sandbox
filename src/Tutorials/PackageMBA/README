@@ -1,0 +1,51 @@
+These are possible outcomes.
+
+============ make run-nod =============
+
+Loading mesh ../data/ramp.ani
+Loading solution ../data/ramp.sol
+Saving GMV image ramp.gmv
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    20000 iterations
+
+Avg Quality is 0.2172E+00,  Maximal R/r = 0.9044E+01,  status.fd:   11
+ITRs:     28 Q=0.2733E-03  #P,F,E:   1558     956     7340  tm=   0.1s
+ITRs:  20001 Q=0.6295E-01  #P,F,E:   3140    1728    14982  tm=  10.5s
+Avg Quality is 0.5769E+00,  Maximal R/r = 0.9688E+01,  status.fd:   11
+Total: 20001 Q=0.6295E-01  #V,F,E:   3140    1728    14982  tm=  10.6s
+
+Saving solution save.sol
+Saving GMV image save.gmv
+Saving mesh save.ani
+
+
+============ make run-ana =============
+
+The mesh has   1536 tetrahedra
+Saving GMV image prism.gmv
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.2702E-01,  Maximal R/r = 0.3687E+01,  status.fd:   11
+ITRs:    110 Q=0.1323E-02  #P,F,E:    515     512     1866  tm=   0.0s
+ITRs:  34290 Q=0.2169E+00  #P,F,E:   3062    2180    13916  tm=  14.9s
+Avg Quality is 0.5759E+00,  Maximal R/r = 0.1197E+02,  status.fd:   11
+Total: 34290 Q=0.2169E+00  #V,F,E:   3062    2180    13916  tm=  14.9s
+
+Saving GMV image save.gmv
+
+
+============ make run-ref =============
+
+Loading mesh ../data/cub6.out
+The loaded mesh has      6 tetrahedra
+
+The uniformly refined mesh has   3072 tetrahedra
+The locally   refined mesh has   6168 tetrahedra
+The locally   refined mesh has  16140 tetrahedra
+The locally   refined mesh has  39228 tetrahedra
+The locally   refined mesh has  62316 tetrahedra
+Saving GMV image save.gmv
+

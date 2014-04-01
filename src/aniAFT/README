@@ -1,0 +1,258 @@
+Package Name:  Ani3D-AFT
+
+This document describes the package Ani3D-AFT, the Flexible 
+Tetrahedral Mesh Generator Using the Advanced Front Technique (AFT).  Ani3D-AFT 
+contains a set of libraries which can be used in various combinations. The package 
+does not contain binaries and precompiled libraries and may be installed on any 
+computer with C and C++ compilers. 
+
+Ani3D-AFT package can be interfaced with the public CAD system Open CASCADE.
+(for details refer to the end of file)
+
+
+
+AUTHORS
+
+Ani3D-AFT was developed by Alexander Danilov, Kirill Nikitin, Anatoly Vershinin and 
+Andrey Plenkin under the supervision of Yuri Vassilevski and Konstantin Lipnikov.
+The package is an independent part of the package Ani3D developed by Konstantin 
+Lipnikov (lipnikov@gmail.com) and Yuri Vassilevski (yuri.vassilevski@gmail.com).
+
+
+BRIEF INTRODUCTION TO THE PACKAGE
+
+In order to describe the libraries, we separate two basic objects: (1) the initial 
+front (triangular mesh of the domain boundary with direction of movement) and 
+(2) the conformal tetrahedral mesh.
+
+The tetrahedral mesh can be produced by AFT if the initial front is shape regular.
+The user is given a number of tools for producing the desirable initial front.
+
+The engine for tetrahedrization is the library libaft3D-$(version).a (source code is in 
+src/aniAFT/src/aniTET). It provides two routines:
+
+   - mesh_3d_aft_func_  generates a shape regular tetrahedrization with a local 
+                        mesh size controlled by the user defined function fsize;
+   - mesh_3d_aft_cf_    generates a shape regular tetrahedrization which is 
+                        coarsened towards the domain interior with the geometric 
+                        factor cf.
+
+Both routines need an initial front, which may be loaded from a file (read_front, 
+write_front for saving front) with extension .frt (e.g., data/knot.frt, 
+data/sculpture.frt). An example of using these routines is in file
+src/Tutorials/PackageAFT/main_aft.c
+
+The first tool for the initial front generation is library libfrtprm-$(version).a (the source 
+code is in directory src/aniAFT/src/aniFRT/PRM). It uses representation of the 
+boundary as a union of smooth parameterized patches. Routine 
+
+   set_param_functions(surface_param, v_u_param) 
+
+adopts the user given parameterizations of the patches surface_param() and their 
+boundaries v_u_param(). Routine 
+
+   set_surface_size_function(fsize) 
+
+adopts the user given mesh size function fsize(). Routine 
+
+   surface_boundary_ 
+
+produces a shape regular triangulation of the boundary with mesh size controlled by 
+fsize(). An example of their use is in file src/Tutorials/PackageAFT/main_prm.c
+Also check src/Tutorials/PackageAFT/main_prm_flat.c for more info.
+
+
+The second tool for the initial front generation is library libfrtscg-$(version).a (the source
+code is in directory src/aniAFT/src/aniFRT/SCG). It uses SCG representation of the 
+domain. The domain is the result of logical operations (union, difference, intersection) 
+with primitives (sphere, box, etc.). Each primitive is given by its front (oriented 
+surface quasi-uniform mesh), and the result is the oriented surface quasi-uniform 
+mesh of the domain boundary (initial front). Routine 
+
+   scg_intersect_mesh 
+
+makes the operations with two front on input and one front on output. Routines 
+
+   scg_make_sphere, scg_make_paral, scg_make_cylinder, 
+   scg_scale, scg_translate, scg_rotate 
+
+help to define the primitives (by generating their fronts). An example of their use 
+is given in file src/Tutorials/PackageAFT/main_scg.c
+
+
+The third tool for the initial front generation is library libfrtmdf-$(version).a (the source code
+is in directory src/aniAFT/src/aniFRT/MDF). It uses representation of the boundary as 
+a triangular approximating of the actual boundary with a given accuracy (a CAD mesh). 
+The triangles (facets) may be anisotropic or severely distorted. An automated remeshing 
+of the CAD mesh such that the mew mesh nodes belong to the CAD surface yields the shape 
+regular initial front. Routine 
+
+   check_surface_topology_fix_ 
+
+checks the topology of the input CAD mesh and merges possible duplicate vertices. Routine 
+
+   surface_refine_setup_poly 
+   surface_refine_setup_cf 
+
+sets control parameters for routine surface_refine_. Their meaning is described in file
+polyreg.cpp. Routine 
+
+   surface_refine_ 
+
+refines (modifies) the CAD mesh and produces the initial front. An example of their use is 
+given in file src/Tutorials/PackageAFT/main_mdf.c
+Also check src/Tutorials/PackageAFT/main_mdf_frt.c for another example.
+
+
+The fourth tool for the initial front generation is library libfrtcad-$(version).a (the source code is in directory
+src/aniAFT/src/aniFRT/CAD). It interactes with the public CAD system OPENCASCADE
+http://www.opencascade.org/ through the interface library CGM. 
+Open CASCADE should be properly installed before the compilation of Ani3D-AFT.
+The interface between AFT kernel and CAD system is based on the Common Geometry Module, Argonne (CGMA,
+http://trac.mcs.anl.gov/projects/ITAPS/wiki/CGM). CGMA is derived from the Common Geometry Module (CGM)
+developed at Sandia National Laboratories (http://cubit.sandia.gov/cgm.html)
+Ani3D-AFT uses modified version CGMA-10.2.3 with some experimental patches for Ani3D-AFT.
+This version is located in src/cgm. It requires at least Open CASCADE version 6.3.
+
+In order to compile CGM and use Open CASCADE support in Ani3D-AFT, environment
+variable $CASROOT should be defined. It should point to the path where Open
+CASCADE is installed. For CGM installation, it is assumed that the target of $CASROOT is the directory
+which includes subdirectories either inc, lib, or ros/inc, ros/lib. If the installed version of Open CASCADE
+does not have such a directory or does not define $CASROOT 
+(it is the case of installation via package manager in Ubuntu Linux), we recommend to define it as follows:
+mkdir opencascade (elsewhere, e.g. in home directory of Ani3D)
+mkdir opencascade/ros
+ln -s /usr/lib opencascade/ros/lib
+ln -s /usr/include/opencascade opencascade/ros/inc
+ln -s /usr/share/opencascade/6.3.0/src opencascade/ros/src
+export CASROOT=PATH_TO_opencascade/ros or
+define CASROOT in .bashrc ("export CASROOT=PATH_TO_opencascade/ros")
+
+
+If $CASROOT variable is unset, CGM will not be compiled, and Open CASCADE support
+will be disabled.
+If $CASROOT variable is set, CGM will be compiled, and library libfrtcad-$(version).a (source
+code is in src/aniAFT/src/aniFRT/CAD) will be built.
+
+An example of library usage is given in src/Tutorials/PackageAFT/main_cad.c
+Main routines to use with libfrtcad-$(version).a are:
+
+  CGM_Init
+
+initializes the CGM interface.
+
+  CGM_LoadModelFromFile
+
+loads the CAD input data (*.brep) and results in OPENCASCADE object 'model'.
+
+  CGM_LoadOCCModelFromFile
+
+loads the CAD input data using different file formants ("OCC", "STEP", "IGES").
+
+  surface_CGM_model_(model,..)
+
+produces a shape regular triangulation of the boundary of 'model'.
+
+
+GRAPHICAL USER INTERFACE
+
+The package is designed so that no graphical interface is needed for the front or 
+tetramesh production. The mesh or front may be saved in files with gmv-format (write_mesh_gmv) 
+and then visualized and analyzed by GMV package. However, for user convenience, a graphical 
+user interface (GUI) is added for the second tool (src/aniAFT/src/aniFRT/GUI/SCG). 
+Operations with primitives may be visualized using this GUI based on the glut library. 
+An example of use of GUI is given in file src/aniAFT/src/aniFRT/GUI/SCG/gui_glut.cpp.
+A description of the control parameters of the GUI is given in src/aniAFT/src/aniFRT/GUI/SCG/README
+
+If the user installed Open CASCADE library, he may wish to take advantage of CASCADE GUI executable DRAWEXE.
+It may be used  to create a .brep file (the input file for Open CASCADE)
+A brief description of the control parameters of the GUI is given in src/aniAFT/src/aniFRT/GUI/CAD/README
+
+
+LEARNING
+
+The best way to learn the package capability is to look through src/Tutorials/PackageAFT/main*.c.
+These programs demonstrate the use of the routines (with extensive comments) and data structure.
+
+
+COMPILATION AND LINKING
+
+The package Ani3D-AFT has been desinged to be independent from the package Ani3D. 
+Therefore, is uses its own compiling and linking rules src/aniAFT/src/cflags.make. 
+
+To make all libraries of the package:                    cd src/aniAFT; make lib
+To make GUI executable for the second tool:              cd src/aniAFT; make gui
+To create all test executables of the package:           cd src/Tutorials/PackageAFT; make exe
+
+All libraries are located in directory ani3D/lib
+
+
+
+RUNNING TESTS
+
+All executables are located in directory ani3D/bin
+
+Test1: given an initial front, generate a tetrahedral mesh
+
+./FrontToTet_aft.exe ../data/knot.frt
+gmv -i mesh.gmv
+
+./FrontToTet_aft.exe ../data/sculpture.frt
+gmv -i mesh.gmv
+
+Test2: define the boundary through the union of smooth patches (non-flat patches 
+are parameterized) and generate a tetrahedral mesh
+
+./ParamToTet_aft.exe
+gmv -i mesh.gmv
+
+Test3: load a CAD mesh, remesh it and generate a tetrahedral mesh
+
+./FrtModifToTet_aft.exe ../data/v2_01_rescale.vtk
+gmv -i mesh.gmv
+
+./FrtModifToTet_aft.exe ../data/v2_02_rescale.vtk
+gmv -i mesh.gmv
+
+Test4: define two primitives, discretize their boundaries, produce the mesh for 
+the boundary of their difference and generate a tetrahedral mesh 
+
+./ScgToTet_aft.exe
+gmv -i mesh.gmv
+
+Test5: control and visualize operations with two primitives through GUI (to save 
+the front, use w or W; to learn other GUI controls: ./gui_glut.exe):
+
+   to create a 0.3-mesh for sphere with radius 1.6, centered at (0, 0, 1) and
+   rotated by angles 0, 0, 0 and a 0.3-mesh for cylinder with radius 0.6, height 5,
+   centered at (0, 0, -1) and rotated by angles 0.3, 0 and 0.5
+
+./gui_glut.exe +s 1.6 0 0 1 0 0 0 0.3 +c 0.6 5 0 0 -1 0.3 0 0.5 0.3
+
+
+  other examples:
+./gui_glut.exe +p 1.3 1.5 0.6 0 0 1 0.2 0 0 0.2 +c 0.6 5 0 0 -1 0.3 0 0.5 0.2
+./gui_glut.exe +s 1.5 0 0 1 0 0 0 0.3 +s 1 0 0 -0.5 0.3 0 0.5 0.3
+./gui_glut.exe +c 1.5 0.5 0 0 1 0.2 0 0 0.2 +c 0.5 5 0 0 -1 0.3 0 0.5 0.2
+
+
+Test6 calls OPENCASCADE for .brep input file and use internal parameterization via
+CGM to generate the initial front. The volume meshing follows the standard path.
+
+  ./CadToTet_aft.exe ../data/box.brep
+  gmv -i mesh.gmv
+
+  ./CadToTet_aft.exe ../data/bsp.brep
+  gmv -i mesh.gmv
+
+  ./CadToTet_aft.exe ../data/sawpipe.brep
+  gmv -i mesh.gmv
+
+
+
+CLEANING
+
+To clean all *.o of the package:                          cd src/aniAFT; make clean
+To clean all *.o, libraries and binaries of the package:  cd src/aniAFT; make purge
+
+

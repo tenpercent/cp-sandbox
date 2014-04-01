@@ -1,0 +1,29 @@
+The six subdirectories contain six examples of adaptive computations 
+which demonstrate different features of the package Ani3D:
+
+
+Interpolation/       is a simple example generating an adaptive mesh to 
+                     minimize the maximum error of the P_1 intepolation
+
+AnisotropicBVP/      is an example of solving an elliptic BVP with 
+                     anisotropic coefficient using an adaptive 
+                     mesh. The domain is the double ramp. 
+
+ConvectionDiffusion/ is an example of solving a convection-diffusion 
+                     equation
+
+Elastisity/          is an example of the  adaptive solution of an elastisity problem.
+
+HybridMixedFem/      is an example of adaptive solution of the diffusion equation
+                     based on the hybrid mixed finite element discretization 
+
+Stokes/              is an example of solving the Stokes problem using
+                     mixed P2-P1 discretization (backward step)
+
+StokesNavier/        is an example of mixed P2-P1 discretization of the
+                     Navier-Stokes problem (backward step).
+
+
+
+For more details please refer to READMEs in subdirectories.
+

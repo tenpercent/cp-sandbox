@@ -1,0 +1,18 @@
+Package name:  aniINB.
+
+Documentation: doc/user_guide.pdf
+
+1. What is aniINB?
+  The FORTRAN package aniINB solves systems of nonlinear equations using 
+the inexact Newton-Krylov backtracking method.
+
+2. Quick Start
+
+   1. read documentation in doc/user_guide.pdf
+   2. cd src/aniILU; make lib
+   3. cd src/aniINB; make lib
+   4. make exe
+   5. make run-simple
+   5. make run-bratu
+   6. make clean
+

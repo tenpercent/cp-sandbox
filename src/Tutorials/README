@@ -1,0 +1,25 @@
+
+   PackageAFT - test directory for generator of tetrahedral meshes aniAFT 
+
+   PackageRCB - test directory for generator of hierarchical locally refined and coarsened tetrahedral meshes aniRCB 
+
+   PackageMBA - test directory for generator of adaptive tetrahedral meshes aniMBA
+
+   PackageFEM - test directory for generator of finite element matrices aniFEM
+
+   PackageILU - test directory for incomplete LU solver aniILU
+
+   PackageLU  - test directory for a black box LU-solver based on UMFPACK 4.1
+
+   PackageINB - test directory for a black box nonlinear Inexact Newton-Krylov Backtracking solver
+
+   PackageLMR - test directory for generator of continuous tensor metrics
+
+   PackageC2F - test directory for C-wrappers to library aniMBA
+
+   PackageVIEW- test directory for visualization tool (GMV-output of a mesh and discrete solution)
+
+   MultiPackage - test directories solving PDEs and showing interaction of a few packages
+
+
+     

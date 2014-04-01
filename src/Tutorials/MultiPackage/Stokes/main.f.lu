@@ -1,0 +1,261 @@
+c ==========================================================
+      Program  main
+c ==========================================================
+c This program generates a finite element system for the Stokes problem
+c
+c  -div grad u  + grad p = 0   in Omega
+c        div u           = 0   in Omega
+c
+c                      u = u_0 on dOmega_1
+c                      u = 0   on dOmega_2
+c              du/dn - p = 0   on dOmega_3
+c
+c where Omega is a backstep domain,            
+c dOmega_1 is the side at x=0, dOmega_3 is the side at x=1, 
+c and dOmega_2 is the rest of the boundary. The non-homogeneous
+c boundary condition is 
+c
+c    u_0 = { 64*(y-0.5)*(1-y)*z*(1-z), 0, 0 }.
+c
+c We use the P2 finite elements for the velocity u and P1
+c finite elements for the pressure p, which are known to
+c be the stable pair. The discretization method results in 
+c a symmetric indefinite matrix.
+c
+c Step 1: we generate a quasi-uniform mesh using library libmba3D.a
+c Step 2: we generate an algebraic system using library libfem3D.a
+c Step 3: we solve the finite element system using library libLU.a
+c ==========================================================
+      implicit none
+
+
+C=====GLOBAL PARAMETERS======
+
+      integer nvmax,ntmax,nbmax,niamax,namax
+c ... nvmax - maximum number of mesh nodes
+c ... ntmax - maximum number of mesh tetrahedra
+c ... nbmax - maximum number of boundary edges
+c ... niamax- maximum number of matrix rows
+c ... namax - maximum number of non-zero matrix entries
+      parameter(nvmax  =  5 500,   ntmax = 6*nvmax, nbmax = 10 000)
+      parameter(niamax = nvmax*34, namax = 40*niamax)
+
+c ... work memory
+      Integer   MaxWr, MaxWi
+      Parameter(MaxWr = 10 000 000, MaxWi = 5 000 000)
+
+      Integer  iW(MaxWi)
+      Real*8   rW(MaxWr)
+
+c ... standard mesh arrays (see doc/user_guide.pdf for more detail)
+c ... number of points, tetrahedra, and boundary facess
+      Integer  nv, nt, nb
+
+c ... coordinates of mesh points, labels of points
+      Real*8   vrt(3,nvmax)
+      Integer  labelP(nvmax)
+
+c ... connectivity table for triangles and triangle labels
+      Integer  tet(4,ntmax),material(ntmax)
+
+c ... connectivity table for boundary edges, and edge labels
+      Integer  bnd(3,nbmax),labelF(nbmax)
+
+
+c ... additional mesh arrays are needed to call aniMetric() from libmba3D.a 
+c     ivfix(nvfix) is array of fixed (never touched) points
+c     ibfix(nbfix) is array of fixed (never touched) faces
+c     itfix(ntfix) is array of fixed (never touched) elements
+      Integer   nvfix, ivfix(12), nbfix, ibfix(1), ntfix, itfix(1) 
+
+
+C=====For LIBRARY LIBMBA======
+
+      Integer   MaxSkipE, MaxQItr, nEStar
+      Parameter(MaxSkipE = 100, MaxQItr = 50 000)
+
+      Real*8    Quality
+      Parameter(Quality = 4D-1)
+
+      Real*8    rQuality
+      Logical   flagAuto
+      Integer   iPrint, iERR
+
+      Integer   ANI_Metric_Eucl
+      External  ANI_Metric_Eucl
+
+
+C=====For LIBRARY LIBFEM======
+
+      include 'fem3Dtet.fd'
+      include 'assemble.fd'
+      Integer  IA(niamax), JA(namax)
+      Real*8    A(namax), RHS(niamax), SOL(niamax), RES(niamax)
+      Integer  status, nRow, nCol
+
+      Real*8   DATAFEM(1)
+      Integer  Dbc
+      EXTERNAL fem3Dext, Dbc
+  
+
+C=====For LIBRARY LIBLU======
+
+      Integer  symbolic(2), numeric(2), sys
+      Real*8   control(20), info(90)
+
+      Integer  IB(niamax), JB(namax)
+      Real*8    B(namax)
+
+
+C=====LOCAL VARIABLES======
+
+      Integer   i,n, iux,iuy,iuz, ip, iv1
+      Real*8    x,y,z, eBC(3), rmax
+
+c ==========================================================
+c Step 1: load a mesh
+      Call loadMani(
+     &      nvmax, nbmax, ntmax,
+     &      nv, nb, nt,
+     &      vrt, bnd, tet, labelF, material,
+     &      nvfix, nbfix, ntfix, ivfix, ibfix, itfix,
+     &      iW, iW, "../data/ramp.ani")
+
+
+c ... generate a quasi-uniform mesh with 2000 tets starting from ramp.ani 
+      nEStar   = 2000    ! number of tets in generated mesh
+      flagAuto = .TRUE.  ! default mesh generation options
+      status   = 1       ! forbid boundary tets (see aniMBA/status.fd)
+      iPrint   = 1       ! low level of output information
+
+
+      Call mbaAnalytic(
+c group (M)
+     &     nv, nvmax, nb, nbmax, nt, ntmax,
+     &     vrt, bnd, tet, labelF, material,
+     &     nEStar, 
+c group (Dev)
+     &     nvfix, nbfix, ntfix, ivfix, ibfix, itfix, 
+     &     flagAuto, status,
+c group (Q)
+     &     MaxSkipE, MaxQItr,
+     &     ANI_Metric_Eucl, Quality, rQuality,
+c group (W)
+     &     MaxWr, MaxWi, rW, iW,
+     &     iPrint, iERR)
+
+      If(iERR.GT.1000) Call errMes(iERR, 'main',
+     &                     'unspecified error if aniAnalytic')
+
+
+c Step 2: generate the finite element system with P2-P1 elements
+c     no data is provided for the user subroutine fem3Dext
+      DATAFEM(1) = 0
+
+c ... mark the Dirichlet points via labelP
+      Do i = 1, nv 
+         labelP(i) = 0
+      End do
+c ... set labels for all Dirichlet faces
+      Do n = 1, nb
+         If(labelF(n).NE.5) Then   
+            Do i = 1, 3
+               iv1 = bnd(i,n)
+               labelP(iv1) = labelF(n)
+            End do
+         End if
+      End do
+c ... overwrite labels for inhomogeneous Dirichlet faces
+      Do n = 1, nb
+         If(labelF(n).EQ.3) Then  
+            Do i = 1, 3
+               iv1 = bnd(i,n)
+               labelP(iv1) = labelF(n)
+            End do
+         End if
+      End do
+
+c ... general sparse matrix in the AMG format (modified CSR format
+c     where the diagonal element goes first)
+      status = IOR(MATRIX_GENERAL, FORMAT_CSR)
+
+      Call BilinearFormTemplate(
+     &     nv, nb, nt, vrt, labelP, bnd, labelF, tet, material,
+     &     fem3Dext, DATAFEM, status,
+     &     niamax, namax, IA, JA, A, RHS, nRow, nCol,
+     &     MaxWi, iW)
+
+
+
+c Step 3: solve the finite element sysytem using the LU decomposition
+      Call AMG2CSC(nRow,IA,JA,A, nCol,IB,JB,B)
+
+c ... converting to the 0-based format
+      Call ZeroBasedFormat(nCol, IB, JB)
+
+c ... set up default control parameters & print only error messages
+      Call umf4def(control)
+      control(1) = 1
+
+c ... pre-order and symbolic analysis
+      Call umf4sym(nCol, nCol, IB,JB,B, symbolic,control,info)
+      If(info(1) .lt. 0) Then
+         Write(*,*) 'Error occurred in umf4sym: ', info(1)
+         Stop
+      End if
+
+c ... numeric factorization
+      Call umf4num(IB,JB,B, symbolic,numeric,control,info)
+      If(info(1) .lt. 0) Then
+         Write(*,*) 'Error occurred in umf4num: ', info(1)
+         Stop
+      End if
+
+c ... free the symbolic analysis data
+      Call umf4fsym(symbolic)
+
+c ... solve Ax=b, without iterative refinement
+      sys = 0
+      Call umf4sol(sys, SOL, RHS, numeric, control, info)
+      If(info(1) .lt. 0) Then
+         Write(*,*) 'Error occurred in umf4sol: ', info(1)
+         Stop
+      End if
+
+c ... free the numeric factorization data
+      Call umf4fnum (numeric)
+
+
+c ... check the residual
+      Call mulAgen(nRow, IA, JA, A, SOL, RES)
+      rmax = 0
+      Do i = 1, nRow
+         rmax = max(rmax, RES(i) - RHS(i))
+      End do
+      Write(*,'(A,E12.6)') 'LU:  Maximal norm of residual: ', rmax
+
+
+
+c Step 4: draw the solution in GMV file
+c ... unknowns in SOL: nodal x-component of velocity starts at SOL(iux),
+c                      nodal y-component of velocity starts at SOL(iuy),
+c                      nodal z-component of velocity starts at SOL(iuz),
+c                      nodal pressure starts at SOL(ip)
+      iux = 1
+      iuy = iux + nv
+      iuz = iuy + nv
+      ip  = iuz + nv
+
+      Call GMVscalarVrt(SOL(iux), "velocity_x.gmv", 10,
+     &                  nv, vrt, nt, tet, nb, bnd, labelF)
+
+      Call GMVscalarVrt(SOL(ip), "pressure.gmv", 10,
+     &                  nv, vrt, nt, tet, nb, bnd, labelF)
+
+
+      Stop
+      End
+
+
+
+

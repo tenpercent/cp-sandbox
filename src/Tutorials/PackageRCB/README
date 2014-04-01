@@ -1,0 +1,46 @@
+The program demonstrates the use of local refinement/coarsening library librcb3D.a based
+on the Marked Edge Bisection.  It starts from a simple coarse tetrahedral meshes,
+(the mesh may be arbitrary conformal)
+refines it nlevel times according to the rule given in RefineRule,
+and coarse the refined mesh 4 times according to the rule given in CoarseRule.
+Examples of RefineRule, CoarseRule are given in main.f.
+Prior the refinement/coarsening the routine  InitializeRCB has to be called (once).
+The rules are designed so that the mesh refines towards a point source moving along
+the edge of the computational polyhedral domain.
+
+Caution! Curve-linear boundary faces are processed as straight:
+         no crv data are on input/output.
+
+The program uses  routines [drawGMVmesh] from libview3D.a and [error] from libmba3D.a.
+
+The output  is  three gmv-pictures of the initial mesh (ini.gmv) and the mesh refined towards
+the initial position of the source (fst.gmv) and the final position of the source (lst.gmv)
+
+
+The user must
+  1) provide an initial tetrahedrization in main.f
+  2) make user routines of rules of refinement/coarsening similar 
+     to RefineRule, CoarseRule in main.f
+
+Then the user can:
+  3) cd ../../aniRCB; make lib; cd ../Tutorials/PackageRCB   # this creates the library librcb2D.a
+  4) make exe   # compiles main.f and produces the executable
+  5) make run   # runs the executable
+  6) make gmv-ini gmv-fst gmv-lst  # shows gmv-images of the initial mesh as well as
+                                   # mesh refined towards the initial position of the source (fst.gmv) 
+                                   # and the final position of the source (lst.gmv) 
+
+The mesh is stored the following format:
+  nv,nt,nb                        number of nodes, tetrahedra and boundary faces
+  ((tet(i,j),i=1,4),j=1,nt)       connectivity table,
+   (material(i),i=1,nt)           labels/materials of tetrahedra,
+  ((bnd(i,j),i=1,3),j=1,nb)       connectivity table for boundary faces, 
+   (labelF(i),i=1,nb)             boundary face labels
+  (vrt(3,i),i=1,nv)               coordinates of nodes.
+
+
+Files:
+   main.f:     main pogram and example of user-defined rules for local 
+               refinement and coarsening;
+   gmv.attr:   attribute file for gmv-visualization
+    

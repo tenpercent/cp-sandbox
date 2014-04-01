@@ -1,0 +1,14 @@
+=========== make ilu0 ==============
+
+SLBPCGS  130: 0.17543E-09 (|SOL|= 0.96566E-01, 0.00E+00 < SOL < 0.404E-02)
+
+
+=========== make ilu2 ==============
+
+Recommendation for ILU2 + BiCGs:
+  partlur = 0.3820951867331805
+  MaxWr   = 116697
+  MaxWi   = 101908
+
+SLBPCGS   11: 0.51423E-11 (|SOL|= 0.96566E-01,  0.00E+00 < SOL < 0.404E-02)
+

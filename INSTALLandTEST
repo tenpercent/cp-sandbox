@@ -1,0 +1,240 @@
+*** Quick start:  Step-by-step instructions with concise comments ***
+
+---------------------------------------------------------------------
+      Create libraries
+---------------------------------------------------------------------
+# vi src/Rules.make 
+# vi src/aniAFT/src/cflags.make 
+(1) provide correct names for compilers 
+(2) define system variable CASROOT pointing to the OpenCascade location 
+    Example: export CASROOT=/opt/OpenCASCADE
+    For details refer to src/aniAFT/README
+    If CASROOT is not defined, the interface with OpenCascade will not
+    be installed. 
+
+    You may need to install the following packages libXext-devel, 
+    mesa-libGL-devel, mesa-libGLU-devel 
+
+# make libs 
+compiles all libraries
+
+
+---------------------------------------------------------------------
+      Learn about individual packages 
+---------------------------------------------------------------------
+# cd src/Tutorials/
+
+# cd PackageAFT; make help 
+# make exe run-aft  
+# make gmv 
+reads boundary triangulation from data/knot.frt and generates a mesh
+(Package Ani3D-AFT, Section 3; hereafter it refers to user_guide.pdf)
+
+# make run-prm 
+# make gmv 
+constructs initial front for analytical model (cube minus sphere) and 
+generates a mesh (Ani3D-AFT, Section 4.1)
+
+# make run-scg 
+# make gmv 
+generates a surface mesh for intersection/union/difference of primitive
+objects and generates a mesh (Ani3D-AFT, Section 4.2)
+
+# make run-mdf 
+# make gmv 
+reads initial front from a .vtk file, improves its and generates a mesh
+(Ani3D-AFT, Section 4.3)
+
+# make run-cad 
+# make gmv 
+reads .brep file, creates initial front, and generates a mesh
+(Ani3D-AFT, Section 4.4)
+
+# make clean; cd ..
+removes executables and temporary files
+
+
+# cd PackageMBA; make help
+# make exe run-ana gmv
+defines a trivial mesh in a triangular prism, refines it, and generates a
+quasi-uniform mesh in anisotropic metric 
+
+# make run-nod gmv
+reads a mesh, defines  a solution, calculates a metric, and generates a mesh
+quasi-uniform in this metric
+
+# make run-ref gmv
+loads a trivial mesh for a cube, refines it globally 3 times, and then
+refines it locally 4 times
+
+# make run-aft gmv
+loads a mesh (.out file) generated with library libaft3D and saves it 
+using in format (.ani file) understood by other libraries
+
+# make run-fix
+improves mesh shape-regularity:  loads a mesh mesh.out (if it does not exist, loads ../data/aft.out),
+fixes it and saves back to mesh.out and mesh.gmv (if mesh.out did not exist, saves to save.out, save.gmv)
+
+
+# make clean; cd ..
+removes executables and temporary files
+
+
+# cd PackageFEM; make help
+# make exe run-tet
+generates a few finite element systems for a single element
+
+# make run-sim
+generates a finite element system for a diffusion problem
+(Ani3D-FEM, Section 4.1)
+
+# make run-tem
+generates a finite element system for a Stokes problem
+(Ani3D-FEM, Section 4.2)
+
+# make run-bc
+illustrates various types of boundary conditions
+
+# make clean; cd .. 
+removes executables and temporary files
+
+
+# cd PackageLMR; make help
+# make exe run-nod
+generates a metric from a given mesh function
+
+# make exe run-grd
+generates a metric to minimize the gradient of the interpolation function
+
+# make exe run-est
+generates a metric from edge-based error estimates
+
+# make clean; cd .. 
+removes executables and temporary files
+
+
+# cd PackageRCB; make help
+# make exe run gmv-ini gmv-fst gmv-lst
+demonstrates the use of local refinement and coarsening. The mesh is refined 
+towards a point source moving along an edge of the computational domain
+
+# make clean; cd .. 
+removes executables and temporary files
+
+
+# cd PackageILU; make help
+# make exe ilu0 
+solve the system with the simplest ILU0 preconditioner (Ani3D-ILU, Section 3)
+
+# make ilu2
+solve the system with the second-order ILU preconditioner (Ani3D-ILU, Section 4)
+pay attention to the number of iterations (113 drops down to 11)
+
+# make clean; cd ..
+removes executables and temporary files
+
+
+# cd PackageLU;  make help
+# make exe run  
+solve a linear system with the UMFPACK package (direct method)
+
+# make clean; cd ..
+removes executables and temporary files
+
+
+# cd PackageINB; make help
+# make exe run-simple
+solve a system of 3 nonlinear equations
+
+# make run-bratu
+solves the 3D Bratu problem
+
+# make clean; cd ..
+removes executables and temporary files
+
+
+# cd PackageC2F; make help
+# make exe run-ana gmv; make run-nod gmv
+tests C-wrappers for calling Fortran routines from Package Ani3D-MBA
+
+# make clean; cd ..
+removes executables and temporary files
+
+
+
+---------------------------------------------------------------------
+      Learn about using packages together
+---------------------------------------------------------------------
+# cd MultiPackage/
+
+# cd Interpolation; make help
+# make exe run gmv; make clean; cd ..
+finds a mesh minimizing the interpolation error for a given function
+(the mean interpolation error is decreased after each adaptive loop)
+
+# cd AnisotropicBVP; make help
+# make exe run; make gmv; make clean; cd ..
+solves an elliptic equation with anisotropic coefficient
+
+# cd HybridMixedFem; make help
+# cat README
+# make exe run gmv 
+# make clean; cd ..
+solves a mixed hydrid diffusion problem with anisotropic tensor 
+
+# cd ConvectionDiffusion; make help
+# make exe run; make gmv; make clean; cd ..
+solves a convection-diffusion equation with dominated convection
+
+# cd Elasticity; make help
+# cat README
+# make exe run; make gmv; make clean; cd ..
+solves a linear elasticity equation in a non-convex domain
+
+# cd Stokes; make help
+# make exe run; make gmv; make clean; cd ..
+solves a Stokes problem
+
+# cd StokesNavier; make help
+# make exe run; make gmv; make clean; cd ../../..
+solves a Navier-Stokes problem (backward step)
+
+
+---------------------------------------------------------------------
+      Learn about our interface to CAD
+---------------------------------------------------------------------
+# cd aniAFT/src/aniFRT/GUI/SCG
+# make; ../../../../../../bin/gui_glut.exe +s 1.6 0 0 1 0 0 0 0.3 +c 0.6 5 0 0 -1 0.3 0 0.5 0.3
+test GUI for Solid Constructive Geometry tool in the aniAFT package.  
+(for details refer to src/aniAFT/src/aniFRT/GUI/SCG/README)
+
+# cd ../CAD; cat README
+GUI for the OPEN CASCADE: works if the OPEN CASCADE is installed.
+Do not forget to set cad environment variables by source command!
+You can create a .brep file (input for OPEN CASCADE),
+controls for GUI are discussed in src/aniAFT/src/aniFRT/GUI/CAD/README
+
+
+
+---------------------------------------------------------------------
+      Remove temporary files and libraries
+---------------------------------------------------------------------
+# cd ../../../../../../; make clean
+*** Cleaning package (call it from the root of directory ani3D). 
+The created libraries will be kept for future use.
+
+# make cleanlibs
+*** Uninstalling the package (call it from the root of directory ani3D).
+This is equivalent to options 'distclean' or 'purge' used in many other 
+packages.
+
+
+
+---------------------------------------------------------------------
+      Communications
+---------------------------------------------------------------------
+# mail lipnikov@gmail.com (Konstantin Lipnikov)
+# mail yuri.vassilevski@gmail.com (Yuri Vassilevski)
+Please send your comments/suggestions/complains/requests or challenging 
+examples to our team. 
+

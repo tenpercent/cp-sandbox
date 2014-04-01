@@ -1,0 +1,127 @@
+Our goal is to study numerically and theoretically new adaptive 
+methods for solving systems of partial differential equations (PDEs). 
+To achieve this goal, we have developed a few focused software 
+packages.
+
+Our objective was to make these packages as INDEPENDENT as possible.
+
+These packages provide libraries that could be used in development 
+of other user-specific software (located in directory src/):
+
+   aniAFT - the flexible generator of tetrahedral meshes using the 
+            advanced front technique. It contains a set of libraries 
+            which can be used in various combinations. The package 
+            does not contain binaries and precompiled libraries and 
+            may be installed on any computer with C and C++ compilers.
+
+   aniRCB - local hierarchical refinement and coarsening of tetrahedral
+            meshes using the marked edge bisection method. It
+            takes on input any conformal tetrahedrization and refines it and
+            coarsens back preserving the shape of the input tetrahedra.
+
+   aniMBA - generation (or re-generation) of adaptive tetrahedral
+            meshes which are quasi-uniform in a metric. The metric 
+            may be given analytically, to generate a mesh with 
+            desired properties, or may be computed from a discrete
+            solution, to generate a mesh adapted to the solution.
+
+   aniFEM - generation of finite element matrices for different
+            types of finite elements, and systems of bilinear and 
+            linear forms.
+
+   aniILU - an incomplete LU solver for sparse linear systems with 
+            non-singular matrices. It can replace package aniLU.
+
+   aniINB - a black box iterative solver for systems of nonlinear equations
+            based on the inexact Newton-Krylov backtracking method.
+
+   aniLMR - generation of nodal tensor metric on the basis
+            of nodal discrete solution (via discrete Hessian recovery)
+            or cell-based or edge-based error estimators
+
+   aniVIEW- a simple visualizing library producing PostScript and
+            GMV files of a mesh and discrete solution.
+
+   aniC2F - a simple C-wrapper to call mesh generation routines 
+            from package aniMBA in a C program.
+
+-------------------------------------------------------------
+Please look inside README  files in src/ani* for more detail.
+-------------------------------------------------------------
+
+The current release includes all the above packages plus a few 
+supplementary packages:
+
+   lapack -  a collection of a few linear algebra algorithms (Real*8). 
+             We recommend to use the corresponding system library if 
+             you have one (see src/Rules.make).
+
+   blas   -  a collection of basic linear algebra Real*8 subroutines
+             such as x*y, a*x+y, etc where x and y are vectors.
+             We recommend to use the corresponding system library if         
+             you have one (see src/Rules.make).
+
+   umfpack - a set of routines solving sparse linear systems via the
+             LU factorization. Requires two other packages: BLAS 
+             (dense matrix operations) and AMD (sparse matrix minimum 
+             degree ordering). Includes a C-callable and MATLAB 
+             interface, and a basic FORTRAN 77 interface to a subset 
+             of the C-callable routines.
+
+   umfpack_amd - a set of routines for permuting sparse matrices prior 
+             to factorization. Includes a version in C, a version in 
+             FORTRAN, and a MATLAB mexFunction.
+
+   cgm      - interface library for Open CASCADE
+
+
+We propose three complementary approaches for learning capabilities of 
+the developed packages:
+
+  1. Read PDF document doc/user_guide.pdf
+
+  2. Look examples of using each package separately in sub-directories of src/
+     Tutorials/PackageAFT,  Tutorials/PackageRCB, Tutorials/PackageLMR,
+     Tutorials/PackageMBA, Tutorials/PackageFEM, Tutorials/PackageC2F,
+     Tutorials/PackageILU,  Tutorials/PackageLU, Tutorials/PackageINB.
+     We prepared extensive comments to facilitate code understanding. 
+
+  3. Study seven multi-package academic examples showing how to combine the
+     packages in a simple FORTRAN77 program to address four basic steps 
+     of every adaptive computation: 
+        (a) generation of an initial mesh,
+        (b) generation of a finite element system, 
+        (c) solution of the FEM system, and 
+        (d) mesh adaptation.
+
+     The examples are located in the following sub-directories of 
+     src/Tutorials/MultiPackage:
+         Interpolation/  AnisotropicBVP/  ConvectionDiffusion/  
+         Elasticity/  HybridMixedFem/  Stokes/  StokesNavier/
+
+
+         - Interpolation/ is a simple example of generation of a mesh 
+           which minimizes the maximum error of the P_1 (piecewise linear)
+           interpolation.
+
+         - AnisotropicBVP/ is an example of solving an elliptic BVP with
+           anisotropic coefficient using an adaptive mesh.
+           The computational domain is the double ramp.
+
+         - ConvectionDiffusion/ is an example of the adaptive solution of 
+           a convection-diffusion equation.
+
+         - Elastisity/ is an example of the  adaptive solution of an elastisity problem.
+
+         - HybridMixedFem/ is an example of the  adaptive solution of a diffusion problem
+           based on the hybrid mixed finite element discretization.
+
+         - Stokes/ is an example of solving the Stokes problem using 
+           mixed P2-P1 discretization
+
+         - StokesNavier/  is an example of mixed P2-P1 discretization of the
+           Navier-Stokes problem (backward step).     
+
+
+
+     

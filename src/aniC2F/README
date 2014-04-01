@@ -1,0 +1,17 @@
+Project name:  Ani3D-C2F
+               (C-wrapper for library animba3D)
+
+
+Documentation: in the next release
+
+
+1. What is aniC2F?
+   A simple C-wrapper to call mesh generation routines 
+   from package aniMBA in C programs.
+
+
+2. Quick Start
+
+   Will be written later.
+
+

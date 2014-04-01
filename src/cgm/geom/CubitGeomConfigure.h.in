@@ -1,0 +1,18 @@
+
+#ifndef CUBIT_GEOM_CONFIGURE_H
+#define CUBIT_GEOM_CONFIGURE_H
+
+#cmakedefine CUBIT_GEOM_BUILD_SHARED_LIBS
+
+#if defined(WIN32) && defined(CUBIT_GEOM_BUILD_SHARED_LIBS)
+#if defined(cubit_geom_EXPORTS)
+#define CUBIT_GEOM_EXPORT __declspec(dllexport)
+#else
+#define CUBIT_GEOM_EXPORT __declspec(dllimport)
+#endif
+#else
+#define CUBIT_GEOM_EXPORT
+#endif
+
+#endif
+

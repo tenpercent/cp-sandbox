@@ -1,0 +1,4 @@
+C type of the metric: isotropic/scalar or full tensor
+      Integer   ANI_METRIC_SCALAR,     ANI_METRIC_TENSOR
+      Parameter(ANI_METRIC_SCALAR = 0, ANI_METRIC_TENSOR = 1)
+

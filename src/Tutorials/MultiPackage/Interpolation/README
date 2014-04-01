@@ -1,0 +1,91 @@
+*** Objective.
+The program builds a mesh which minimizes the interpolation error 
+for function Func(x,y) defined in main.f. The main program is an
+example of an adaptive loop including two major steps: 
+(a) Hessian-based mesh adaptation and (b) interpolation error 
+estimate. The initial mesh is in file data/cube.ani
+
+
+*** Requirements.
+The package requires the following libraries
+  lib/libmba3D-2.0.a  or higher 
+  lib/liblmr3D-2.0.a  or higher 
+  lib/libview3D-1.0.a or higher
+
+If these libraries are missing, please, build them using command
+'make lib' in directories src/aniMBA,  src/aniLMR, and src/aniVIEW.
+
+
+*** Quick start.
+ls ../../../lib/   (if the required libraries are missing, build them)
+make exe 
+make run gmv
+make clean
+
+
+*** Contents:
+  main.f      -  Main program illustrating organization of an adaptive
+                 loop using library libmba3D.
+
+  esterr.f    -  Auxiliary routine calculating L_infty error.
+
+
+*** Example of output ***
+Loading mesh ../data/cube.ani
+The loaded mesh has    218 tetrahedra
+
+=====  1th ADAPTIVE LOOP =====
+L8 errors (min/max/mean): 0.413E-04 0.605E+01 0.500E+00
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.70 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.2719E+00,  Maximal R/r = 0.2717E+01,  status.fd:   11
+ITRs:     19 Q=0.5100E-04  #P,F,E:     94     108      275  tm=   0.0s
+ITRs:  35737 Q=0.3651E+00  #P,F,E:   2350    1326    11163  tm=  19.0s
+Avg Quality is 0.6802E+00,  Maximal R/r = 0.1536E+02,  status.fd:   11
+
+=====  2th ADAPTIVE LOOP =====
+L8 errors (min/max/mean): 0.729E-04 0.168E+01 0.365E-01
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.70 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.1664E+00,  Maximal R/r = 0.1536E+02,  status.fd:   11
+ITRs:      0 Q=0.1184E-04  #P,F,E:   2350    1326    11163  tm=   0.1s
+ITRs:  50001 Q=0.3372E+00  #P,F,E:   3047    1490    14837  tm=  28.7s
+Avg Quality is 0.6365E+00,  Maximal R/r = 0.1169E+02,  status.fd:   11
+
+=====  3th ADAPTIVE LOOP =====
+L8 errors (min/max/mean): 0.210E-03 0.442E+00 0.325E-01
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.70 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.4365E+00,  Maximal R/r = 0.1169E+02,  status.fd:   11
+ITRs:      0 Q=0.3581E-02  #P,F,E:   3047    1490    14837  tm=   0.1s
+ITRs:  30184 Q=0.2564E+00  #P,F,E:   3150    1804    15092  tm=  19.4s
+Avg Quality is 0.6313E+00,  Maximal R/r = 0.1355E+02,  status.fd:   11
+
+=====  4th ADAPTIVE LOOP =====
+L8 errors (min/max/mean): 0.613E-03 0.172E+00 0.314E-01
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.70 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.5729E+00,  Maximal R/r = 0.1355E+02,  status.fd:   11
+ITRs:      0 Q=0.9117E-02  #P,F,E:   3150    1804    15092  tm=   0.1s
+ITRs:  28685 Q=0.2811E+00  #P,F,E:   2994    1936    14075  tm=  17.1s
+Avg Quality is 0.6618E+00,  Maximal R/r = 0.1196E+02,  status.fd:   11
+
+=====  5th ADAPTIVE LOOP =====
+L8 errors (min/max/mean): 0.963E-03 0.102E+00 0.309E-01
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.70 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.6320E+00,  Maximal R/r = 0.1196E+02,  status.fd:   11
+ITRs:      0 Q=0.1117E+00  #P,F,E:   2994    1936    14075  tm=   0.1s
+ITRs:  24645 Q=0.3396E+00  #P,F,E:   2860    1944    13348  tm=  19.0s
+Avg Quality is 0.6788E+00,  Maximal R/r = 0.1570E+02,  status.fd:   11
+

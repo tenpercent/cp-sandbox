@@ -1,0 +1,44 @@
+mainEst2Metric.f  mainFunc2GradMetric.f  mainNodal2Metric.f  Makefile
+
+Package name:  Ani3D-LMR.
+
+
+1. What is Ani3D-LMR?
+  The program mainNodal2Metric.f shows how to recover a metric from a
+  discrete function defined at mesh nodes. The metric is defined by the
+  spectral modulus of the discrete Hessian of this discrete function.
+  The metric depends on the Lp norm of the error that the user wants to
+  minimize. Two methods for the Hessian recovery are available. To change
+  the recovery method, the user must replace call of Nodal2MetricVAR(...)
+  with Nodal2MetricZZ(...).
+
+  The program mainFunc2GradMetric.f demonstrates the metric building for
+  minimizing the gradient of the P1 interpolation error. The metric depends
+  on Lp norm of this error that the user wants to minimize. The
+  interpolation error is calculated using a given function Func(xy).
+
+  The program mainEst2Metric.f builds a metric from errors defined
+  either at centers of mesh elements or at centers of mesh edges. The
+  errors may be replaced by the user given error estimates. The current
+  release calculates the maximum norm of the interpolation error on elements
+  or edges using the user-defined function Func(xy).
+
+
+
+2. Requirements
+  The package requires the following libraries
+     lib/libmba3D-2.x.a
+     lib/libfem3D-2.x.a
+     lib/liblmr3D-2.x.a
+
+  If these libraries are missing, please, build them using command
+  'make lib' in directories src/aniMBA, src/aniLMR.
+
+
+3. Quick start
+  ls ../../../lib/   (if the required libraries are missing, build them)
+  make exe
+  make run-nod
+  make run-grd
+  make run-est
+  make clean

@@ -1,0 +1,16 @@
+Project name:  C-wrapper for library animba3D-2.x.a
+
+Package name:  Ani3D-C2F.
+
+
+1. What is Ani3D-C2F?
+   C-wrappers to call mesh generation routines from package aniMBA in
+C and C++ programs. It hides memory management and sets default values
+for many parameters. Next package to be wrapped is aniFEM.
+
+
+2. Quick Start
+
+   make exe run-nod
+   make exe run-ana
+

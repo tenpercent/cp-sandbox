@@ -1,0 +1,23 @@
+Project name:   GENERATOR OF FEM SYSTEMS ON UNSTRUCTURED TETRAHEDRAL MESHES.
+
+Package name:  Ani3D-FEM.
+
+Documentation: doc/user_guide.pdf
+
+1. What is Ani3D-FEM ?
+  The Fortran package Ani3D-FEM generates finite element matrices on
+unstructured tetrahedral meshes. The package allows to build elemental
+matrices for variety of finite elements and bilinear forms. It allows
+to modify these matrices, assemble them, and impose boundary conditions.
+
+This directory presents three examples of using the libraty lib3Dfem.a.
+The first example (mainTetrahedron.f) shows how to build elemental matrices.
+The second example (mainTemplate.f) shows how to assemble a matrix for 
+the Stokes problems. The third example (mainBC.f) shows how to apply various 
+boundary conditions. 
+
+The program mainSimple.f shows the old way to assemble matrices. It will
+be removed in the next version.
+
+
+

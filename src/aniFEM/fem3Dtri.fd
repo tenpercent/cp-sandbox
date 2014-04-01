@@ -1,0 +1,44 @@
+C ======================================================================
+C               NUMERICAL INTEGRATION PARAMETERS
+C ======================================================================
+C  MaxPnt2DGauss = the maximal number of Gauss points
+C ======================================================================
+      Integer   KDG1,     KDG2,     KDG5,     KDG6
+      Parameter(KDG1 = 1, KDG2 = 3, KDG5 = 7, KDG6 = 12)
+
+      Integer   MaxPnt2DGauss, AllPnt2DGauss
+      Parameter(MaxPnt2DGauss = KDG6)
+      Parameter(AllPnt2DGauss = KDG1 + KDG2 + KDG5 + KDG6)
+
+c ... order = 1 (1 point)
+      Real*8    U1A, S1A
+      Parameter(U1A = 0.33333333333333D0, S1A = 1D0)
+
+c ... order = 2 (3 points)
+      Real*8    U2A, U2B, S2A
+      Parameter(U2A = 0.0D0, U2B = 0.5D0)
+      Parameter(S2A = 0.33333333333333D0)
+
+c ... order = 5 (7 points)
+      Real*8    U5A, U5B, U5C, U5D, U5E, S5A, S5B, S5C
+      Parameter(U5A = 0.33333333333333D0)
+      Parameter(S5A = 0.225D0)
+
+      Parameter(U5B = 0.797426985353087D0, U5C = 0.101286507323456D0)
+      Parameter(S5B = 0.125939180544827D0)
+
+      Parameter(U5D = 0.0597158717897698D0, U5E = 0.470142064105115D0)
+      Parameter(S5C = 0.132394152788506D0)
+
+c ... order = 6 (12 points)
+      Real*8    U6A, U6B, U6C, U6D, U6E, U6F, U6G, S6A, S6B, S6C
+      Parameter(U6A = 0.873821971016996D0, U6B = 0.063089014491502D0)
+      Parameter(S6A = 0.050844906370207D0)
+
+      Parameter(U6C = 0.501426509658179D0, U6D = 0.249286745170910D0)
+      Parameter(S6B = 0.116786275726379D0)
+
+      Parameter(U6E = 0.636502499121399D0, U6F = 0.310352451033785D0)
+      Parameter(                           U6G = 0.053145049844816D0)
+      Parameter(S6C = 0.082851075618374D0)
+

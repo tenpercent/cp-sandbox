@@ -1,0 +1,18 @@
+c=======================================================
+c memory dependant max parameters
+c=======================================================
+      integer nvmax,ntmax,nbmax,namax
+c ... nvmax - maximum number of mesh nodes (v)
+c ... ntmax - maximum number of mesh tetrahedra (t)
+c ... nbmax - maximum number of boundary faces (b)
+
+c ... old values:
+c ... parameter(nvmax = 7000000, ntmax = 40000000, nbmax = 500000)
+c ... new values:
+      parameter(nvmax = 70000, ntmax = 400000, nbmax = 5000)
+c ... namax - maximum number of non-zero matrix entries
+c ... old values:
+c ... parameter(namax = 100000000)
+c ... new values:
+      parameter(namax = 1000000)
+

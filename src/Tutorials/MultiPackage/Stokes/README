@@ -1,0 +1,93 @@
+*** Objectives ***
+
+This program generates a finite element system for the Stokes problem
+
+ -div grad u  + grad p = 0   in Omega
+       div u           = 0   in Omega
+
+                     u = u_0 on dOmega_1
+                     u = 0   on dOmega_2
+             du/dn - p = 0   on dOmega_3
+
+where Omega is a backstep domain,
+dOmega_1 is the side at x=0, dOmega_3 is the side at x=1,
+and dOmega_2 is the rest of the boundary. The non-homogeneous
+boundary condition is
+
+   u_0 = { 64*(y-0.5)*(1-y)*z*(1-z), 0, 0 }.
+
+We use the P2 finite elements for the velocity u and P1
+finite elements for the pressure p, which are known to
+be the stable pair. The discretization method results in
+a symmetric indefinite matrix.
+
+Step 1: we generate a quasi-uniform mesh using library libmba3D.a
+Step 2: we generate an algebraic system and matrices for preconditioner
+        using library libfem3D.a
+Step 3: we solve the finite element system using library libILU.a
+
+
+
+
+*** Requirements ***
+  lib/libmba3D-2.1.a  or  higher
+  lib/libfem3D-2.1.a  or  higher
+  lib/libilu-2.1.a    or  higher
+  lib/libview3D-2.1.a or higher
+
+
+
+*** Quick start ***
+ls ../../../lib/    (if the required libraries are missing, build them)
+make exe
+make run gmv
+make clean
+
+If these libraries are missing, please, build them using command
+'make lib' in directories src/aniMBA,  src/aniFEM, 
+src/aniVIEW and src/aniILU. 
+
+
+
+*** Contents ***
+   main.f      - Main program with calls routines from the libraries
+
+   forlibfem.f - The user-prepared file for the library libfem3D (matrix 
+                 and right-hand side generators). It provides routines
+                 for computing the matrix and the right-hand side.
+
+   forlibilu.f - The user-prepared file for the library libilu (iterative
+                 solver with ILU preconditioners). It provides evaluation of the block
+                 diagonal preconditioner for the saddle point matrix.
+
+ 
+*** Example of output ***
+Loading mesh ../data/ramp.ani
+MBA: STONE FLOWER! (1997-2010), version 2.3
+     Target: Quality=0.40 (nEStar:   7000, SkipE:  100, maxITR:   50000)
+Avg Quality is 0.4656E+00,  Maximal R/r = 0.3725E+01,  status.fd:   11
+ITRs:      0 Q=0.1175E+00  #V#F#T:   5187    2676    25113  tm=   0.1s
+ITRs:  10173 Q=0.3291E+00  #V#F#T:   3559    2470    16735  tm=   1.8s
+Avg Quality is 0.5801E+00,  Maximal R/r = 0.3698E+01,  status.fd:   11
+Total: 10173 Q=0.3291E+00  #V#F#E:   3559    2470    16735  tm=   1.9s
+
+FEM: matrix with full structure
+     sparse compressed row format
+     matrix size:  25087 x  25087  (   671125 non-zero entries)
+     memory usage: 11% (Integer) and  0% (Real*8)
+ P2 Laplacian is ready..
+ ILU preconditioner for P2 Laplacian is ready..
+FEM: matrix with full structure
+     sparse compressed row format
+     matrix size:   3559 x   3559  (    46615 non-zero entries)
+     memory usage:  3% (Integer) and  0% (Real*8)
+ P1 mass matrix is ready..
+ ILU preconditioner for P1 mass matrix is ready..
+FEM: matrix with full structure
+     sparse compressed row format
+     matrix size:  78820 x  78820  (  7249456 non-zero entries)
+     memory usage: 15% (Integer) and  0% (Real*8)
+ILU: iters:  30, residual=0.771E-04 (|SOL|= 0.6304E+03, -0.7646E+01 < SOL <  0.2652E+02)
+
+
+

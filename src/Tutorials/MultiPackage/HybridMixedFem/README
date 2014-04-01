@@ -1,0 +1,29 @@
+*** Objectives ***
+
+The program demonstrates adaptive solution for the following bvp:
+ 
+    -div u = 0         in  Omega    (mass conservation eqn)
+         u = D grad p  in  Omega    (constitutive equation)
+         p = 0         on  dOmega_1
+         p = 2         on  dOmega_2
+ 
+where Omega is the unit cube (dOmega_1) with a cubic hole 
+(dOmega_2) in the center. The full anisotropic diffusion 
+tensor D is defined by three rotations of a diagonal 
+anisotropic tensor.
+
+We use the mixed-hybrid finite element method with the lowest 
+order Raviart-Thomas elements. The method results in a 
+problem with a symmetric positive definite stiffness matrix 
+for the Lagrange multipliers.
+
+
+*** Contents ***
+   main.f      - Main program with calls routines from the libraries
+
+   forlibfem.f - The user-prepared file for the library libfem3D (matrix
+                 and right-hand side generators). It provides routines
+                 for computing the diffusion tensor, boundary conditions
+                 and the right-hand side.
+
+

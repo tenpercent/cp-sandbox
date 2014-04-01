@@ -1,0 +1,9 @@
+# Ani3D/src/BI
+
+if (ANI3D_BUILD_BIOIMPEDANCE_DIFF)
+    add_subdirectory(diff)
+endif (ANI3D_BUILD_BIOIMPEDANCE_DIFF)
+if (ANI3D_BUILD_BIOIMPEDANCE_MESH)
+    add_subdirectory(mesh)
+endif (ANI3D_BUILD_BIOIMPEDANCE_MESH)
+

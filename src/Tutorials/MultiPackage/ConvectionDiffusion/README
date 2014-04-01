@@ -1,0 +1,199 @@
+*** Objectives ***
+The package demonstrates the iterative adaptive solution of
+the boundary value problem:
+
+  -div D grad u + v * grad u = 1 in Omega
+                           u = 0 on dOmega
+
+where Omega is the unit cube [0;1]x[0;1]x[0;1] and the
+diffusion coefficient D is the diagonal tensor given by
+
+       D = diag{0.01,0.01,0.01}
+
+The components of the convection vector v are
+       vx = 3
+       vy = 2
+       vz = 1
+
+SUPG stabilization is not used here, since the adaptive mesh 
+stabilizes the discretization.
+
+
+
+*** Requirements ***
+The package requires the following libraries
+  lib/libmba3D-2.0.a  or  higher
+  lib/libfem3D-2.0.a  or  higher
+  lib/liblmr3D-2.0.a  or  higher
+  lib/libilu-2.0.a    or  higher
+  lib/libview3D-2.0.a or  higher
+
+
+*** Quick start ***
+ls ../../../lib/    (if the required libraries are missing, build them)
+make exe
+make run gmv 
+make clean
+
+
+If these libraries are missing, please, build them using command
+'make lib' in directories src/aniMBA, src/aniFEM,  src/aniLMR, src/aniVIEW and 
+src/aniILU.
+
+
+*** Contents ***
+   main.f      - Main program with calls routines from the libraries
+
+
+   forlibfem.f - The user-prepared file for the library libfem3D.
+                 It provides routines for calculating the diffusion 
+                 tensor, boundary conditions and right-hand side.
+
+
+
+*** Example of program output ***
+Loading mesh ../data/cube.ani
+The loaded mesh has    218 tetrahedra
+
+===> LOOP:  1
+   number of non-zero entries:     767
+   confirmed problem size:          75
+   SLBPCGS    2: 0.687E-10 (|SOL|= 0.4808E+01, -0.5704E+00 < SOL <  0.2271E+01)
+   maximal norm of residual: 0.376350E-10
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.4029E-01,  Maximal R/r = 0.2570E+01,  status.fd:   10
+ITRs:     19 Q=0.1491E-02  #P,F,E:     94     108      275  tm=   0.0s
+ITRs:   3252 Q=0.4000E+00  #P,F,E:   2044    1236     9391  tm=   0.9s
+Avg Quality is 0.6081E+00,  Maximal R/r = 0.5873E+01,  status.fd:   10
+
+===> LOOP:  2
+   number of non-zero entries:   26148
+   confirmed problem size:        2044
+   SLBPCGS    5: 0.689E-12 (|SOL|= 0.8001E+01, -0.1354E+00 < SOL <  0.1017E+01)
+   maximal norm of residual: 0.129258E-12
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.3584E+00,  Maximal R/r = 0.5873E+01,  status.fd:   10
+ITRs:     10 Q=0.2872E-03  #P,F,E:   2054    1236     9421  tm=   0.1s
+ITRs:  11815 Q=0.2626E+00  #P,F,E:   2277    1606    10259  tm=   5.4s
+Avg Quality is 0.6706E+00,  Maximal R/r = 0.8095E+01,  status.fd:   10
+
+===> LOOP:  3
+   number of non-zero entries:   28953
+   confirmed problem size:        2277
+   SLBPCGS    4: 0.770E-10 (|SOL|= 0.1158E+02, -0.2904E-01 < SOL <  0.7912E+00)
+   maximal norm of residual: 0.192215E-10
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.4891E+00,  Maximal R/r = 0.8331E+01,  status.fd:   10
+ITRs:     27 Q=0.2670E-02  #P,F,E:   2304    1606    10340  tm=   0.1s
+ITRs:   8632 Q=0.3363E+00  #P,F,E:   2458    1812    10989  tm=   3.8s
+Avg Quality is 0.6792E+00,  Maximal R/r = 0.1039E+02,  status.fd:   10
+
+===> LOOP:  4
+   number of non-zero entries:   31162
+   confirmed problem size:        2458
+   SLBPCGS    4: 0.686E-10 (|SOL|= 0.1290E+02, -0.2852E-01 < SOL <  0.7156E+00)
+   maximal norm of residual: 0.141421E-10
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.5560E+00,  Maximal R/r = 0.8864E+01,  status.fd:   10
+ITRs:     27 Q=0.7916E-02  #P,F,E:   2485    1812    11070  tm=   0.1s
+ITRs:   6550 Q=0.2896E+00  #P,F,E:   2465    1926    10920  tm=   2.9s
+Avg Quality is 0.6905E+00,  Maximal R/r = 0.1782E+02,  status.fd:   10
+
+===> LOOP:  5
+   number of non-zero entries:   31159
+   confirmed problem size:        2465
+   SLBPCGS    4: 0.379E-10 (|SOL|= 0.1266E+02, -0.1679E-01 < SOL <  0.6195E+00)
+   maximal norm of residual: 0.107910E-10
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.6067E+00,  Maximal R/r = 0.1782E+02,  status.fd:   10
+ITRs:     35 Q=0.1333E-01  #P,F,E:   2500    1926    11025  tm=   0.1s
+ITRs:   6013 Q=0.2582E+00  #P,F,E:   2442    1988    10675  tm=   3.0s
+Avg Quality is 0.7044E+00,  Maximal R/r = 0.1081E+02,  status.fd:   10
+
+===> LOOP:  6
+   number of non-zero entries:   30662
+   confirmed problem size:        2442
+   SLBPCGS    4: 0.390E-10 (|SOL|= 0.1212E+02, -0.1707E-01 < SOL <  0.5740E+00)
+   maximal norm of residual: 0.766185E-11
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.6216E+00,  Maximal R/r = 0.1435E+02,  status.fd:   10
+ITRs:     36 Q=0.1089E-01  #P,F,E:   2478    1988    10783  tm=   0.1s
+ITRs:   6833 Q=0.3058E+00  #P,F,E:   2489    2074    10814  tm=   4.8s
+Avg Quality is 0.6994E+00,  Maximal R/r = 0.1233E+02,  status.fd:   10
+Total:  6833 Q=0.3058E+00  #V,F,E:   2489    2074    10814  tm=   4.9s
+
+===> LOOP:  7
+   number of non-zero entries:   31167
+   confirmed problem size:        2489
+   SLBPCGS    4: 0.632E-10 (|SOL|= 0.1226E+02, -0.4449E-01 < SOL <  0.5500E+00)
+   maximal norm of residual: 0.241636E-10
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.6436E+00,  Maximal R/r = 0.1631E+02,  status.fd:   10
+ITRs:     30 Q=0.1265E-01  #P,F,E:   2519    2074    10904  tm=   0.1s
+ITRs:   6675 Q=0.2341E+00  #P,F,E:   2449    2154    10466  tm=   3.8s
+Avg Quality is 0.7120E+00,  Maximal R/r = 0.1393E+02,  status.fd:   10
+
+===> LOOP:  8
+   number of non-zero entries:   30431
+   confirmed problem size:        2449
+   SLBPCGS    5: 0.181E-12 (|SOL|= 0.1155E+02, -0.1017E-01 < SOL <  0.5441E+00)
+   maximal norm of residual: 0.516948E-13
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.6455E+00,  Maximal R/r = 0.1554E+02,  status.fd:   10
+ITRs:     11 Q=0.2713E-01  #P,F,E:   2460    2154    10499  tm=   0.1s
+ITRs:   5454 Q=0.2833E+00  #P,F,E:   2479    2268    10427  tm=   2.7s
+Avg Quality is 0.7142E+00,  Maximal R/r = 0.1769E+02,  status.fd:   10
+
+===> LOOP:  9
+   number of non-zero entries:   30557
+   confirmed problem size:        2479
+   SLBPCGS    4: 0.539E-10 (|SOL|= 0.1118E+02,  0.0000E+00 < SOL <  0.5453E+00)
+   maximal norm of residual: 0.187168E-10
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.6465E+00,  Maximal R/r = 0.1679E+02,  status.fd:   10
+ITRs:     14 Q=0.2680E-01  #P,F,E:   2493    2268    10469  tm=   0.1s
+ITRs:   7628 Q=0.2626E+00  #P,F,E:   2494    2348    10425  tm=   5.2s
+Avg Quality is 0.7072E+00,  Maximal R/r = 0.1874E+02,  status.fd:   10
+
+===> LOOP: 10
+   number of non-zero entries:   30678
+   confirmed problem size:        2494
+   SLBPCGS    5: 0.490E-12 (|SOL|= 0.1092E+02, -0.7779E-02 < SOL <  0.5525E+00)
+   maximal norm of residual: 0.216036E-12
+
+STONE FLOWER! (1997-2008), version 2.1
+Target: Quality 0.40 with    10000 tetrahedra for at most    50000 iterations
+
+Avg Quality is 0.6422E+00,  Maximal R/r = 0.1899E+02,  status.fd:   10
+ITRs:     20 Q=0.2377E-01  #P,F,E:   2514    2348    10485  tm=   0.1s
+ITRs:   7432 Q=0.2995E+00  #P,F,E:   2515    2394    10482  tm=   3.9s
+Avg Quality is 0.7080E+00,  Maximal R/r = 0.2625E+02,  status.fd:   10
+
+

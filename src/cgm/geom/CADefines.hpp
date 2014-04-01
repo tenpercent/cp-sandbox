@@ -1,0 +1,57 @@
+
+#ifndef __CADEFINES_H__
+#define __CADEFINES_H__
+
+enum CubitAttributeType {
+    CA_UNDEFINED = -1,
+    CA_MERGE_PARTNER = 0, // must be 0!!!
+    CA_ENTITY_NAME,
+    CA_GROUP,
+    CA_ENTITY_ID,
+    CA_PARTITION_VG,
+    CA_COMPOSITE_VG,
+    CA_VIRTUAL_VG,
+    CA_UNIQUE_ID,
+    CA_DEFERRED_ATTRIB,
+    CA_MESH_INTERVAL,
+    CA_MESH_RELATIVE_LENGTH,
+    CA_GENESIS_ENTITY,
+    CA_MESH_SCHEME,
+    CA_SMOOTH_SCHEME,
+    CA_VERTEX_TYPE,
+    CA_MESH_CONTAINER,
+    CA_BODIES,
+    CA_ENTITY_COLOR,
+    CA_VERTEX_FORCE,
+    CA_SURFACE_FORCE,
+    CA_CURVE_FORCE,
+    CA_VERTEX_DISPLACEMENT,
+    CA_SURFACE_DISPLACEMENT,
+    CA_CURVE_DISPLACEMENT,
+    CA_VOLUME_DISPLACEMENT,
+    CA_SURFACE_PRESSURE,
+    CA_CURVE_PRESSURE,
+    CA_SURFACE_TEMPERATURE,
+    CA_CURVE_TEMPERATURE,
+    CA_VERTEX_TEMPERATURE,
+    CA_SURFACE_HEATFLUX,
+    CA_CURVE_HEATFLUX,
+    CA_SURFACE_CONVECTION,
+    CA_CURVE_CONVECTION,
+    CA_SURFACE_CONTACT,
+    CA_CURVE_CONTACT,
+    CA_COORD_SYS,
+    CA_MATERIAL_BLOCK,
+    CA_PROPERTY_BLOCK,
+    CA_MERGE_STATUS,
+    CA_GRAPHICS_OPTS,
+    CA_ALL_ATTRIBUTES,// CA_ALL_ATTRIBUTES is used to refer to
+                      // all attribute types.  It can NOT be assumed to be
+                      // higher than any given
+                      // attribute type (eg. for the last index in a loop)
+    CA_ASSEMBLY_DATA,
+    CA_SIZING_FUNCTION_SKELETON,
+    CA_SOURCE_FEATURE
+};
+
+#endif // __CADEFINES_H__

@@ -1,0 +1,22 @@
+Package name:  Ani3D-INB
+              (Inexact Newton-Krylov Backtracking solver)
+
+Documentation: doc/user_guide.pdf
+
+
+1. What is aniINB?
+  The FORTRAN package aniINB solves systems of nonlinear equations using
+  evaluation of the nonlinear function and optional preconditioner for the
+  unknown jacobian.
+
+
+2. Quick Start
+
+   1. read documentation
+   3. make libs
+   2. cd src/Tutorials/PackageINB
+   4. make exe
+   6. make run-simple
+   7. make run-bratu
+   8. make clean
+

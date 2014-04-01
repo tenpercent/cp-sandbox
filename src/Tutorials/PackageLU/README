@@ -1,0 +1,13 @@
+=========== make run =================
+
+time of symbolic analysis:  0.00E+00 (sec)
+numeric factorization:
+   time:      0.00E+00
+   actual numeric LU statistics:
+   size of LU:          0.01 (MB)
+   memory needed:       0.06 (MB)
+   flop count:      0.80E+04
+   nnz (L):             648.
+   nnz (U):             648.
+norm (A*x-b):    3.1918911957973251E-16
+

@@ -1,0 +1,26 @@
+C ======================================================================
+C               MATRIX DETAILS
+C ======================================================================
+      Integer   MATRIX_SYMMETRIC,     MATRIX_GENERAL
+      Parameter(MATRIX_SYMMETRIC = 1, MATRIX_GENERAL = 2)
+
+      Integer   FORMAT_AMG,     FORMAT_CSR,     FORMAT_CSC
+      Parameter(FORMAT_AMG = 4, FORMAT_CSR = 8, FORMAT_CSC = 16)
+
+
+C ======================================================================
+C               BOUNDARY CONDITIONs
+C ======================================================================
+      Integer   BC_DIRICHLET,     BC_NEUMANN,     BC_ROBIN
+      Parameter(BC_DIRICHLET = 11,  BC_NEUMANN = 12, BC_ROBIN = 14)
+
+      Integer   BC_ROBIN_COEF,      BC_NULL
+      Parameter(BC_ROBIN_COEF = 15, BC_NULL = 0)
+
+
+C ======================================================================
+C               COMMUNICATION ARRAYs
+C ======================================================================
+      Integer   MAXiSYS
+      Parameter(MAXiSYS = 21)
+

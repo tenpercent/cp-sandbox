@@ -1,0 +1,60 @@
+Package Name: Ani3D-FEM
+              (Generation of stiffness matrices for tetrahedral meshes)
+
+
+Contents:
+ 1. What is fem3D?
+ 2. Main features of fem3D.
+ 3. Installation guide.
+ 4. Available support.
+ 5. References (in the next release).
+  
+
+
+1. What is fem3D?
+  The Fortran 77 package fem3D generates elemental matrices
+for a general biliner and linear forms and different finite 
+elements. The package also contains algorithms of fast 
+assembling of elemental matrices.
+
+
+
+2. Main features of fem3D.
+(a) Simplicity and portability. It is written in Fortran 77,
+    contains a few files, and a very simple Makefile. Since we 
+    have not used any system dependent calls (except for time 
+    measurement), the code is widely portable.
+
+(b) Ability to generate matrices for six types of finite 
+    elements and five first-order differential operator.
+
+(c) Ability to generate matrices for systems of PDEs and
+    variables coefficients.
+
+(d) Ability to assemble arbitrary elemental matrices provided
+    by the user.
+
+(e) The library routines may be used in C++ and C codes in
+    similar to using the Lapack routines.
+
+
+
+3. Installation guide.
+  There is a PDF file doc/user_guide.pdf explaining details of
+the package installation.
+
+
+
+4. Available support.
+  We hope that our friends and colleagues will try package aniFEM
+in their research. We shall appreciate any remarks, comments and
+we shall response to them ASAP. This will help us to improve future
+versions of the package. The contact information is
+
+
+    Developer             E-mail
+
+    Konstantin Lipnikov   lipnikov@gmail.com
+    Yuri Vassilevski      yuri.vassilevs@gmail.com
+
+

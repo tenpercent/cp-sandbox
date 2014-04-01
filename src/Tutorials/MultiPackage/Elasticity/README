@@ -1,0 +1,50 @@
+*** Objectives ***
+The package demonstrates the iterative adaptive solution of
+the boundary value problem:
+
+  div M grad u + (M+L) grad div u = 0 in Omega
+                                u = u_0 on Gamma1
+                                u = u_0 on Gamma2
+
+where Omega is the union of two parallepipeds rotated about z-axis,
+M and L are Lame coefficients, and pull boxes away form each other.
+
+   u_0 = (0, 0, z).
+ 
+The mesh is adapted according to the Hessian of z-component of the
+displacement vector. GMV file contains the mesh and z-component of the
+displacement vector.
+
+
+*** Requirements ***
+The package requires the following libraries
+  lib/libmba3D-2.0.a  or  higher
+  lib/libfem3D-2.0.a  or  higher
+  lib/liblmr3D-2.0.a  or  higher
+  lib/libilu-2.0.a    or  higher
+  lib/libview3D-2.0.a or  higher
+
+
+*** Quick start ***
+ls ../../../lib/    (if the required libraries are missing, build them)
+make exe
+make run gmv 
+make clean
+
+
+If these libraries are missing, please, build them using command
+'make lib' in directories src/aniMBA, src/aniFEM, src/aniLMR, src/aniVIEW and 
+src/aniILU.
+
+
+*** Contents ***
+   main.f      - Main program with calls routines from the libraries
+
+
+   forlibfem.f - The user-prepared file for the library libfem3D.
+                 It provides routines for calculating the diffusion 
+                 tensor, boundary conditions and right-hand side.
+
+
+
+
