@@ -1,7 +1,7 @@
 C ======================================================================
 C  The user defined routines required above
 C ======================================================================
-      Subroutine FEM3Dext(XY1, XY2, XY3, XY4,
+      Subroutine FEM3Dext (XY1, XY2, XY3, XY4,
      &                    lbE, lbF, lbR, lbP, DATAFEM, iSYS,
      &                    LDA, A, F, nRow, nCol,
      &                    templateR, templateC)
@@ -32,10 +32,10 @@ C LOCAL VARIABLEs
       Real*8   C(3, 3), G(3), XYP(3, 4)
       Real*8   x, y, z, eBC(1)
 
-      Integer  i,j,k,l,m, ir, ic, label, ibc
+      Integer  i, j, k, l, m, ir, ic, label, ibc
 
       Integer  iref(5), ip(4)
-      DATA     iref/1,2,3,4,1/
+      DATA     iref /1, 2, 3, 4, 1/
 
 
 C ======================================================================
@@ -53,53 +53,54 @@ c ... compute the stiffness matrix (M)
       label = lbE
 
 c anisotropy of material numbers 1,2,3
-      if (label.EQ.1 .or. label.EQ.2 .or.
-     & label.EQ.3) then
+      if (label .EQ. 1 .or. 
+     &    label .EQ. 2 .or.
+     &    label .EQ. 3) then
 
-      Call matrRotate(XY1,XY2,XY3,XY4,label,
-     & DATAFEM,DATAFEM1)
+        Call matrRotate(XY1,XY2,XY3,XY4,label,
+     &                  DATAFEM,DATAFEM1)
 
 c     A(1:4,1:4) is elemental vector elliptic operator;
 c     in other words, for the bilinear form <grad(P1), grad(P1)>
 
-      Call fem3Dtet(XY1, XY2, XY3, XY4,
+        Call fem3Dtet(XY1, XY2, XY3, XY4,
      &              GRAD, FEM_P1, GRAD, FEM_P1,
      &              label, Ddiff, DATAFEM1, iSYS, 2,
      &              LDA, A, ir, ic)
 
 c ... compute the right hand side vector using external function Drhs
 c     in other words, the linear form <Drhs(x), P1>
-      Call fem3Dtet(XY1, XY2, XY3, XY4,
+        Call fem3Dtet(XY1, XY2, XY3, XY4,
      &              IDEN, FEM_P0, IDEN, FEM_P1,
      &              lbE, Drhs, DATAFEM1, iSYS, 5,
      &              LDA, F, ir, ic)
 
 
-        Else
+      Else
 
-      Call fem3Dtet(XY1, XY2, XY3, XY4,
+        Call fem3Dtet(XY1, XY2, XY3, XY4,
      &              GRAD, FEM_P1, GRAD, FEM_P1,
      &              label, Ddiff, DATAFEM, iSYS, 2,
      &              LDA, A, ir, ic)
 
-      Call fem3Dtet(XY1, XY2, XY3, XY4,
+        Call fem3Dtet(XY1, XY2, XY3, XY4,
      &              IDEN, FEM_P0, IDEN, FEM_P1,
      &              lbE, Drhs, DATAFEM, iSYS, 5,
      &              LDA, F, ir, ic)
 
-        End if
+      End if
 
 
 c ... impose the Neumann boundary conditions
       Do i = 1, 3
-         XYP(i, 1) = XY1(i)
-         XYP(i, 2) = XY2(i)
-         XYP(i, 3) = XY3(i)
-         XYP(i, 4) = XY4(i)
+        XYP(i, 1) = XY1(i)
+        XYP(i, 2) = XY2(i)
+        XYP(i, 3) = XY3(i)
+        XYP(i, 4) = XY4(i)
       End do
 
       Do k = 1, 4
-         If(lbF(k).GT.0) Then
+        If(lbF(k) .GT. 0) Then
             l = iref(k + 1)
             m = iref(l + 1)
 
@@ -109,7 +110,7 @@ c ... impose the Neumann boundary conditions
 
             ibc = Dbc(x, y, z, lbF(k), DATAFEM, iSYS, eBC)
 
-            If(ibc.EQ.BC_NEUMANN) Then
+            If(ibc .EQ. BC_NEUMANN) Then
                label = lbF(k)
 
                Call fem3Dtri(XYP(1, k), XYP(1, l), XYP(1, m),
@@ -123,7 +124,7 @@ c ... impose the Neumann boundary conditions
             End if
 
 
-         End if
+        End if
       End do
 
 
@@ -132,13 +133,13 @@ c ... impose the Neumann boundary conditions
 c ... impose Dirichlet boundary conditions at triangle nodes
 c     this condition should go the last one
       Do k = 1, 4
-         If(lbP(k).NE.0) Then
+         If(lbP(k) .NE. 0) Then
             x = XYP(1, k)
             y = XYP(2, k)
             z = XYP(3, k)!
             ibc = Dbc(x, y, z, lbP(k), DATAFEM, iSYS, eBC)
 
-            If(ibc.EQ.BC_DIRICHLET) Then
+            If(ibc .EQ. BC_DIRICHLET) Then
                Call applyDIR(LDA, nRow, A, F, k, eBC(1))
             End if
          End if
@@ -162,39 +163,38 @@ C ======================================================================
       iSYS(1) = 3
       iSYS(2) = 3
 
-      if (label.EQ.1 .or. label.EQ.2 .or.
-     & label.EQ.3) then
+      if (label .EQ. 1 .or. 
+     &    label .EQ. 2 .or.
+     &    label .EQ. 3) then
 
-      Coef(1, 1) = DATA(1)
-      Coef(2, 2) = DATA(4)
-      Coef(3, 3) = DATA(6)
+        Coef(1, 1) = DATA(1)
+        Coef(2, 2) = DATA(4)
+        Coef(3, 3) = DATA(6)
 
-      Coef(1, 2) = DATA(2)
-      Coef(2, 1) = DATA(2)
+        Coef(1, 2) = DATA(2)
+        Coef(2, 1) = DATA(2)
 
-      Coef(1, 3) = DATA(3)
-      Coef(3, 1) = DATA(3)
+        Coef(1, 3) = DATA(3)
+        Coef(3, 1) = DATA(3)
 
-      Coef(3, 2) = DATA(5)
-      Coef(2, 3) = DATA(5)
+        Coef(3, 2) = DATA(5)
+        Coef(2, 3) = DATA(5)
 
       Else
 
-      Coef(1, 1) = DATA(label+7)
-      Coef(2, 2) = DATA(label+7)
-      Coef(3, 3) = DATA(label+7)
+        Coef(1, 1) = DATA(label+7)
+        Coef(2, 2) = DATA(label+7)
+        Coef(3, 3) = DATA(label+7)
 
-      Coef(1, 2) = 0D0
-      Coef(2, 1) = 0D0
+        Coef(1, 2) = 0D0
+        Coef(2, 1) = 0D0
 
-      Coef(1, 3) = 0D0
-      Coef(3, 1) = 0D0
+        Coef(1, 3) = 0D0
+        Coef(3, 1) = 0D0
 
-      Coef(3, 2) = 0D0
-      Coef(2, 3) = 0D0
+        Coef(3, 2) = 0D0
+        Coef(2, 3) = 0D0
       End if
-
-
 
       Ddiff = TENSOR_SYMMETRIC
 
@@ -207,33 +207,33 @@ C ======================================================================
 c Boundary conditions
 C ======================================================================
       Integer Function Dbc(x, y, z, label, DATA, iSYS, Coef)
-      implicit none
-      Include 'assemble.fd'
+        implicit none
+        Include 'assemble.fd'
 
-      Real*8  x, y, z, DATA(*), Coef(*)
-      Integer label, iSYS(*)
+        Real*8  x, y, z, DATA(*), Coef(*)
+        Integer label, iSYS(*)
 
-      iSYS(1) = 1
-      iSYS(2) = 1
+        iSYS(1) = 1
+        iSYS(2) = 1
 
-      If(label.EQ.111) Then
-         Coef(1) = 0! Dirichlet at point
-         Dbc = BC_DIRICHLET
-      Else If(label.EQ.1) Then
-         Coef(1) = 0
-         Dbc = BC_NEUMANN     ! potok na poverhnosti tela
-      Else If(label.EQ.DATA(1)) Then
-         Coef(1) = DATA(3)!1D0
-         Dbc = BC_NEUMANN
-      Else If(label.EQ.DATA(2)) Then
-         Coef(1) = -DATA(4)!-1D0
-         Dbc = BC_NEUMANN
-      Else If(label.GT.1 .AND. label.LT.30) Then
-         Coef(1) = 0
-         Dbc = BC_NEUMANN     ! potok na poverhnosti tela
-      Else
-         Dbc = BC_NULL
-      End if
+        If(label .EQ. 111) Then
+           Coef(1) = 0! Dirichlet at point
+           Dbc = BC_DIRICHLET
+        Else If (label .EQ. 1) Then
+           Coef(1) = 0
+           Dbc = BC_NEUMANN     ! potok na poverhnosti tela
+        Else If (label .EQ. DATA(1)) Then
+           Coef(1) = DATA(3)!1D0
+           Dbc = BC_NEUMANN
+        Else If (label.EQ.DATA(2)) Then
+           Coef(1) = -DATA(4)!-1D0
+           Dbc = BC_NEUMANN
+        Else If (label.GT.1 .AND. label.LT.30) Then
+           Coef(1) = 0
+           Dbc = BC_NEUMANN     ! potok na poverhnosti tela
+        Else
+           Dbc = BC_NULL
+        End if
 
       Return
       End
@@ -246,17 +246,17 @@ C ======================================================================
 c Right hand side F
 C ======================================================================
       Integer Function Drhs(x, y, z, label, DATA, iSYS, Coef)
-      implicit none
-      Include 'fem3Dtet.fd'
+        implicit none
+        Include 'fem3Dtet.fd'
 
-      Real*8  x, y, z, DATA(*), Coef(*)
-      Integer label, iSYS(*)
+        Real*8  x, y, z, DATA(*), Coef(*)
+        Integer label, iSYS(*)
 
-      iSYS(1) = 1
-      iSYS(2) = 1
+        iSYS(1) = 1
+        iSYS(2) = 1
 
-      Coef(1) = 0D0
-      Drhs = TENSOR_SCALAR
+        Coef(1) = 0D0
+        Drhs = TENSOR_SCALAR
 
       Return
       End
@@ -273,111 +273,116 @@ c==========================================================================
 
 C LOCAL VARIABLEs
 
-      Integer  i,j,k,l
+      Integer i, j, k, l
       Integer label
 
-      Real*8 e1,e2,e3,ed ! e1
-      Real*8 m1,m2,m3,md ! e2
-      Real*8 n1,n2,n3,nd ! e3
-      Real*8 f1,f2,f3,fd !
+      Real*8 e1, e2, e3, ed ! e1 (this is a comment)
+      Real*8 m1, m2, m3, md ! e2
+      Real*8 n1, n2, n3, nd ! e3
+      Real*8 f1, f2, f3, fd !
 
-      Real*8 KB(3,3),T(3,3),KF(3,3)
+      Real*8 KB(3,3), T(3,3), KF(3,3)
 c====================================================
-      ed=sqrt((XY2(1)-XY1(1))**2+(XY2(2)-XY1(2))**2+
-     &  (XY2(3)-XY1(3))**2)
-      e1=(XY2(1)-XY1(1))/ed
-      e2=(XY2(2)-XY1(2))/ed
-      e3=(XY2(3)-XY1(3))/ed
+      ed = sqrt ( (XY2(1) - XY1(1)) ** 2 + 
+     &            (XY2(2) - XY1(2)) ** 2 +
+     &            (XY2(3) - XY1(3)) ** 2)
+      e1 = (XY2(1) - XY1(1)) / ed
+      e2 = (XY2(2) - XY1(2)) / ed
+      e3 = (XY2(3) - XY1(3)) / ed
 
 
-      fd=sqrt((XY3(1)-XY1(1))**2+(XY3(2)-XY1(2))**2+
-     &  (XY3(3)-XY1(3))**2)
-      f1=(XY3(1)-XY1(1))/fd
-      f2=(XY3(2)-XY1(2))/fd
-      f3=(XY3(3)-XY1(3))/fd
+      fd = sqrt( (XY3(1) - XY1(1)) ** 2 + 
+     &           (XY3(2) - XY1(2)) ** 2 +
+     &           (XY3(3) - XY1(3)) ** 2)
+      f1 = (XY3(1) - XY1(1)) / fd
+      f2 = (XY3(2) - XY1(2)) / fd
+      f3 = (XY3(3) - XY1(3)) / fd
 
-      md=sqrt((e2*f3-e3*f2)**2+(e3*f1-e1*f3)**2+
-     &  (e1*f2-e2*f1)**2)
-      m1=(e2*f3-e3*f2)/md
-      m2=(e3*f1-e1*f3)/md
-      m3=(e1*f2-e2*f1)/md
+      md = sqrt( (e2 * f3 - e3 * f2) ** 2 + 
+     &           (e3 * f1 - e1 * f3) ** 2 +
+     &           (e1 * f2 - e2 * f1) ** 2)
+      m1 = (e2 * f3 - e3 * f2) / md
+      m2 = (e3 * f1 - e1 * f3) / md
+      m3 = (e1 * f2 - e2 * f1) / md
 
-      nd=sqrt((e2*m3-m2*e3)**2+(e3*m1-e1*m3)**2+
-     &  (e1*m2-e2*m1)**2)
-      n1=(e2*m3-m2*e3)/nd
-      n2=(e3*m1-e1*m3)/nd
-      n3=(e1*m2-e2*m1)/nd
+      nd = sqrt( (e2 * m3 - m2 * e3) ** 2 + 
+     &           (e3 * m1 - e1 * m3) ** 2 +
+     &           (e1 * m2 - e2 * m1) ** 2)
+      n1 = (e2 * m3 - m2 * e3) / nd
+      n2 = (e3 * m1 - e1 * m3) / nd
+      n3 = (e1 * m2 - e2 * m1) / nd
 
 c provodimost posle povorota k1
 c zapolnyeam matrix, posle povorota
 c matrix povorota T
-      T(1,1)=e1
-      T(2,1)=e2
-      T(3,1)=e3
-      T(1,2)=m1
-      T(2,2)=m2
-      T(3,2)=m3
-      T(1,3)=n1
-      T(2,3)=n2
-      T(3,3)=n3
+      T(1, 1) = e1
+      T(2, 1) = e2
+      T(3, 1) = e3
+      T(1, 2) = m1
+      T(2, 2) = m2
+      T(3, 2) = m3
+      T(1, 3) = n1
+      T(2, 3) = n2
+      T(3, 3) = n3
 
-      Do i=1,3
-      	Do j=1,3
-        KF(i,j)=0D0
+      Do i = 1, 3
+      	Do j = 1, 3
+          KF(i, j) = 0D0
         End do
       End do
 
-      if (label.EQ.1) then
-      KB(1,1)=DATA(5)
-      KB(2,1)=0D0 !DATA(2)
-      KB(3,1)=0D0 !DATA(3)
-      KB(1,2)=0D0 !DATA(2)
-      KB(2,2)=DATA(6)!DATA(4)
-      KB(3,2)=0D0 !DATA(5)
-      KB(1,3)=0D0 !DATA(3)
-      KB(2,3)=0D0 !DATA(5)
-      KB(3,3)=DATA(6)
+      if (label .EQ. 1) then
+        KB(1, 1) = DATA(5)
+        KB(2, 1) = 0D0     ! DATA(2)
+        KB(3, 1) = 0D0     ! DATA(3)
+        KB(1, 2) = 0D0     ! DATA(2)
+        KB(2, 2) = DATA(6) ! DATA(4)
+        KB(3, 2) = 0D0     ! DATA(5)
+        KB(1, 3) = 0D0     ! DATA(3)
+        KB(2, 3) = 0D0     ! DATA(5)
+        KB(3, 3) = DATA(6)
 
-      Else if (label.EQ.2) then
-      KB(1,1)=DATA(7)
-      KB(2,1)=0D0
-      KB(3,1)=0D0
-      KB(1,2)=0D0
-      KB(2,2)=DATA(8)
-      KB(3,2)=0D0
-      KB(1,3)=0D0
-      KB(2,3)=0D0
-      KB(3,3)=DATA(8)
+      Else if (label .EQ. 2) then
+        KB(1, 1) = DATA(7)
+        KB(2, 1) = 0D0
+        KB(3, 1) = 0D0
+        KB(1, 2) = 0D0
+        KB(2, 2) = DATA(8)
+        KB(3, 2) = 0D0
+        KB(1, 3) = 0D0
+        KB(2, 3) = 0D0
+        KB(3, 3) = DATA(8)
 
-      Else if (label.EQ.3) then
-      KB(1,1)=DATA(9)
-      KB(2,1)=0D0
-      KB(3,1)=0D0
-      KB(1,2)=0D0
-      KB(2,2)=DATA(10)
-      KB(3,2)=0D0
-      KB(1,3)=0D0
-      KB(2,3)=0D0
-      KB(3,3)=DATA(10)
+      Else if (label .EQ. 3) then
+        KB(1, 1) = DATA(9)
+        KB(2, 1) = 0D0
+        KB(3, 1) = 0D0
+        KB(1, 2) = 0D0
+        KB(2, 2) = DATA(10)
+        KB(3, 2) = 0D0
+        KB(1, 3) = 0D0
+        KB(2, 3) = 0D0
+        KB(3, 3) = DATA(10)
 
       End if
 
-      Do i=1,3
-      	Do j=1,3
-	 Do k=1,3
-	  Do l=1,3
-	   KF(i,j)=KF(i,j)+T(i,k)*T(j,l)*KB(k,l)
-	   End do
-	 End do
-	End do
+c ::: KF += T * KB * T.transposed
+      Do i = 1, 3
+      	Do j = 1, 3
+	        Do k = 1, 3
+	          Do l = 1, 3
+	            KF(i, j) = KF(i, j) + T(i, k) * T(j, l) * KB(k, l) 
+	          End do
+	        End do
+       	End do
       End do
 
-        DATAR(1)=KF(1,1)
-        DATAR(2)=KF(2,1)
-        DATAR(3)=KF(3,1)
-        DATAR(4)=KF(2,2)
-	  DATAR(5)=KF(3,2)
-        DATAR(6)=KF(3,3)
+      DATAR(1) = KF(1, 1)
+      DATAR(2) = KF(2, 1)
+      DATAR(3) = KF(3, 1)
+      DATAR(4) = KF(2, 2)
+      DATAR(5) = KF(3, 2)
+      DATAR(6) = KF(3, 3)
 
       Return
       End
@@ -424,36 +429,37 @@ c ======================================================================
 
       Integer i, j
 
-      if (label.EQ.1 .or. label.EQ.2 .or.
-     & label.EQ.3) then
+      if (label .EQ. 1 .or.
+     &    label .EQ. 2 .or.
+     &    label .EQ. 3) then
 
-      Coef(1, 1) = DATA(1)
-      Coef(2, 2) = DATA(4)
-      Coef(3, 3) = DATA(6)
+        Coef(1, 1) = DATA(1)
+        Coef(2, 2) = DATA(4)
+        Coef(3, 3) = DATA(6)
 
-      Coef(1, 2) = DATA(2)
-      Coef(2, 1) = DATA(2)
+        Coef(1, 2) = DATA(2)
+        Coef(2, 1) = DATA(2)
 
-      Coef(1, 3) = DATA(3)
-      Coef(3, 1) = DATA(3)
+        Coef(1, 3) = DATA(3)
+        Coef(3, 1) = DATA(3)
 
-      Coef(3, 2) = DATA(5)
-      Coef(2, 3) = DATA(5)
+        Coef(3, 2) = DATA(5)
+        Coef(2, 3) = DATA(5)
 
       Else
 
-      Coef(1, 1) = DATA(label+7)
-      Coef(2, 2) = DATA(label+7)
-      Coef(3, 3) = DATA(label+7)
+        Coef(1, 1) = DATA(label + 7)
+        Coef(2, 2) = DATA(label + 7)
+        Coef(3, 3) = DATA(label + 7)
 
-      Coef(1, 2) = 0D0
-      Coef(2, 1) = 0D0
+        Coef(1, 2) = 0D0
+        Coef(2, 1) = 0D0
 
-      Coef(1, 3) = 0D0
-      Coef(3, 1) = 0D0
+        Coef(1, 3) = 0D0
+        Coef(3, 1) = 0D0
 
-      Coef(3, 2) = 0D0
-      Coef(2, 3) = 0D0
+        Coef(3, 2) = 0D0
+        Coef(2, 3) = 0D0
 
       End if
 
@@ -463,18 +469,26 @@ c ======================================================================
 c=======================================================
 c vicheslenie chuvstvitelnosti
 c=======================================================
-      Subroutine Sens(n,E11,E12,E21,E22,SnR,SnI)
+      Subroutine Sens(n, E11, E12, E21, E22, SnR, SnI)
       implicit none
 
       Integer n
-      Real*8 E11(3,*),E12(3,*), E21(3,*),E22(3,*)
-      Real*8 SnI,SnR
+      Real*8 E11(3, *), E12(3, *), E21(3, *), E22(3, *)
+      Real*8 SnI, SnR
 
-      SnR=E11(1,n)*E21(1,n)+E11(2,n)*E21(2,n)+E11(3,n)*E21(3,n)-
-     & (E12(1,n)*E22(1,n)+E12(2,n)*E22(2,n)+E12(3,n)*E22(3,n))
+      SnR = E11(1, n) * E21(1, n) + 
+     &      E11(2, n) * E21(2, n) + 
+     &      E11(3, n) * E21(3, n) - 
+     &      E12(1, n) * E22(1, n) - 
+     &      E12(2, n) * E22(2, n) - 
+     &      E12(3, n) * E22(3, n)
 
-      SnI=E12(1,n)*E21(1,n)+E12(2,n)*E21(2,n)+E12(3,n)*E21(3,n)+
-     & (E11(1,n)*E22(1,n)+E11(2,n)*E22(2,n)+E11(3,n)*E22(3,n))
+      SnI = E12(1, n) * E21(1, n) + 
+     &      E12(2, n) * E21(2, n) + 
+     &      E12(3, n) * E21(3, n) +
+     &      E11(1, n) * E22(1, n) + 
+     &      E11(2, n) * E22(2, n) + 
+     &      E11(3, n) * E22(3, n)
 
       Return
       End
@@ -756,7 +770,7 @@ c============================================
       Subroutine Det(qw1,qw2,qw3,qw4,qw5,qw6,qw7,qw8,qw9,qw)
       implicit none
 
-      Real*8 qw1,qw2,qw3,qw4,qw5,qw6
+      Real*8 qw1, qw2, qw3, qw4, qw5, qw6
       Real*8 qw7,qw8,qw9,qw
 
       qw=(qw1*qw5*qw9+qw7*qw2*qw6+qw3*qw4*qw8-
@@ -772,18 +786,18 @@ c============================================
       Subroutine ConsPlane(XY1,XY2,XY3,A,B,C,in)
       implicit none
 
-      Real*8 XY1(*),XY2(*),XY3(*)
-      Real*8 A,B,C
-      Real*8 D,D1,D2,D3
-      Real*8 t1,t2,t3
+      Real*8 XY1(*), XY2(*), XY3(*)
+      Real*8 A, B, C
+      Real*8 D, D1, D2, D3
+      Real*8 t1, t2, t3
       Integer in
 
 
       External Det
 
-      t1=XY1(1)**2+XY1(2)**2+XY1(3)**2
-      t2=XY2(1)**2+XY2(2)**2+XY2(3)**2
-      t1=XY3(1)**2+XY3(2)**2+XY3(3)**2
+      t1 = XY1(1) ** 2 + XY1(2) ** 2 + XY1(3) ** 2
+      t2 = XY2(1) ** 2 + XY2(2) ** 2 + XY2(3) ** 2
+      t1 = XY3(1) ** 2 + XY3(2) ** 2 + XY3(3) ** 2
 
       if (t1.NE.0 .and. t2.NE.0 .and. t3.NE.0) then
       Call Det(XY1(1),XY1(2),XY1(3),XY2(1),XY2(2),
@@ -799,12 +813,12 @@ c============================================
      & -1D0,XY3(1),XY3(2),-1D0,D3)
 
       if (D.NE.0) then
-      A=D1/D
-      B=D2/D
-      C=D3/D
-      in=1
+        A = D1 / D
+        B = D2 / D
+        C = D3 / D
+        in = 1
       else
-      stop 'determinant=0'
+        stop 'determinant=0'
       end if
 
       Else if (t1.EQ.0) then
