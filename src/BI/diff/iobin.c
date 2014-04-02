@@ -26,7 +26,7 @@ int savebin_(int *pd, char *labels, ...) {
 	if (!(f = fopen(fname, "w")))  perror(fname);
 	fwrite(data, sizeof(double), n1*n2, f);
 	fclose(f);
-	if (0) {
+	if (0) { // what?
 	    fprintf(stderr, "	<DataItem Dimensions=\"");
 	    fprintf(stderr, (n2>1)?"%d %d":"%d", n1, n2);
 	    fprintf(stderr, "\" NumberType=\"Float\" Precision=\"8\" Format=\"Binary\">%s.%s</DataItem>\n", fmt, pc);

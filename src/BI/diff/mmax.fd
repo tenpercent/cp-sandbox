@@ -1,7 +1,7 @@
 c=======================================================
 c memory dependant max parameters
 c=======================================================
-      integer nvmax,ntmax,nbmax,namax
+      integer nvmax, ntmax, nbmax, namax
 c ... nvmax - maximum number of mesh nodes (v)
 c ... ntmax - maximum number of mesh tetrahedra (t)
 c ... nbmax - maximum number of boundary faces (b)

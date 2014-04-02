@@ -19,7 +19,8 @@ C ======================================================================
       Real*8  A(LDA, *), F(*)
       Integer templateR(*), templateC(*)
 
-C LOCAL VARIABLEs
+C ::: local variables:
+
       Real*8  DATAFEM1(6)
       Real*8  DATAFEM2(6)
       Real*8  DATAFEM3(6)
@@ -57,8 +58,8 @@ c anisotropy of material numbers 1,2,3
      &    label .EQ. 2 .or.
      &    label .EQ. 3) then
 
-        Call matrRotate(XY1,XY2,XY3,XY4,label,
-     &                  DATAFEM,DATAFEM1)
+        Call matrRotate(XY1, XY2, XY3, XY4,
+     &                  label, DATAFEM, DATAFEM1)
 
 c     A(1:4,1:4) is elemental vector elliptic operator;
 c     in other words, for the bilinear form <grad(P1), grad(P1)>
@@ -264,7 +265,8 @@ C ======================================================================
 c==========================================================================
 c povorot
 c==========================================================================
-      Subroutine matrRotate(XY1,XY2,XY3,XY4,label,DATA,DATAR)
+      Subroutine matrRotate(XY1, XY2, XY3, XY4,
+     &                      label, DATA, DATAR)
       implicit none
 
 
@@ -496,25 +498,27 @@ c=======================================================
 c==========================================================
 c vycheslenie plotnosti toka
 c==========================================================
-      Subroutine Jeval(XY1,XY2,XY3,XY4,label,DATAFEMR,DATAFEMI,
-     & RV1,RV2,J1,J2,J3,J4,J5,J6)
+      Subroutine Jeval(XY1, XY2, XY3, XY4,
+     &                 label, DATAFEMR, DATAFEMI,
+     &                 RV1, RV2,
+     &                 J1, J2, J3, J4, J5, J6)
 
       include 'fem3Dtet.fd'
 
-      Real*8  RV1(*),RV2(*)! napryajennost
+      Real*8  RV1(*), RV2(*)                ! napryajennost
       Real*8  XY1(*), XY2(*), XY3(*), XY4(*)
-      Real*8  DATAFEMR(*),DATAFEMI(*)
+      Real*8  DATAFEMR(*), DATAFEMI(*)
 
       Real*8  DATAFEM1(6), DATAFEM2(6)
 
 
-C LOCAL VARIABLEs
+C ... local variables:
 
       Integer label
 
-      Real*8 J1,J2,J3,J4,J5,J6
+      Real*8 J1, J2, J3, J4, J5, J6
 
-      Real*8 CoeffE(3,3), CoeffI(3,3), RV3(3),RV4(3)
+      Real*8 CoeffE(3, 3), CoeffI(3, 3), RV3(3), RV4(3)
 
       External Ddiff2
       External matrRotate
@@ -523,56 +527,56 @@ c =====================================
 
 c ... plotnost toka v zavisimosti ot nomera materiala
 
-      if (label.EQ.1 .or. label.EQ.2 .or.
-     & label.EQ.3) then
+      if (label.EQ.1 .or. 
+     &    label.EQ.2 .or.
+     &    label.EQ.3) then
 
-      Call matrRotate(XY1,XY2,XY3,XY4,label,
-     & DATAFEMR,DATAFEM1)
+        Call matrRotate(XY1, XY2, XY3, XY4, label,
+     &                  DATAFEMR, DATAFEM1)
 
-      Call Ddiff2(label,DATAFEM1,CoeffE)
+        Call Ddiff2(label, DATAFEM1, CoeffE)
 
-      Call matrRotate(XY1,XY2,XY3,XY4,label,
-     & DATAFEMI,DATAFEM2)
+        Call matrRotate(XY1, XY2, XY3, XY4, label,
+     &                  DATAFEMI, DATAFEM2)
 
-      Call Ddiff2(label,DATAFEM2,CoeffI)
+        Call Ddiff2(label, DATAFEM2, CoeffI)
 
 c... real part J
 
-      Call dGemv('N',3,3,1D0,CoeffE,3,RV1,1,0d0,RV3,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffE, 3, RV1, 1, 0d0, RV3, 1)
 
-      Call dGemv('N',3,3,1D0,CoeffI,3,RV2,1,0d0,RV4,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffI, 3, RV2, 1, 0d0, RV4, 1)
 
-       J1=RV3(1)-RV4(1)
-       J2=RV3(2)-RV4(2)
-       J3=RV3(3)-RV4(3)
+        J1 = RV3(1) - RV4(1)
+        J2 = RV3(2) - RV4(2)
+        J3 = RV3(3) - RV4(3)
 
 c... imaginary part J
 
-      Call dGemv('N',3,3,1D0,CoeffI,3,RV1,1,0d0,RV3,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffI, 3, RV1, 1, 0d0, RV3, 1)
 
-      Call dGemv('N',3,3,1D0,CoeffE,3,RV2,1,0d0,RV4,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffE, 3, RV2, 1, 0d0, RV4, 1)
 
-      J4=RV3(1)+RV4(1)
-      J5=RV3(2)+RV4(2)
-      J6=Rv3(3)+RV4(3)
-
+        J4 = RV3(1) + RV4(1)
+        J5 = RV3(2) + RV4(2)
+        J6 = Rv3(3) + RV4(3)
 
       Else
 
-      Call Ddiff2(label,DATAFEMR,CoeffE)
+        Call Ddiff2(label,DATAFEMR,CoeffE)
 
-      Call Ddiff2(label,DATAFEMI,CoeffI)
+        Call Ddiff2(label,DATAFEMI,CoeffI)
 
 
 c... real part J
 
-      Call dGemv('N',3,3,1D0,CoeffE,3,RV1,1,0d0,RV3,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffE, 3, RV1, 1, 0d0, RV3, 1)
 
-      Call dGemv('N',3,3,1D0,CoeffI,3,RV2,1,0d0,RV4,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffI, 3, RV2, 1, 0d0, RV4, 1)
 
-      J1=RV3(1)-RV4(1)
-      J2=RV3(2)-RV4(2)
-      J3=RV3(3)-RV4(3)
+        J1 = RV3(1) - RV4(1)
+        J2 = RV3(2) - RV4(2)
+        J3 = RV3(3) - RV4(3)
 
 c      Jr(1,n)=RV3(1)-RV4(1)
 c      Jr(2,n)=RV3(2)-RV4(2)
@@ -580,13 +584,13 @@ c      Jr(3,n)=RV3(3)-RV4(3)
 
 c... imaginary part J
 
-      Call dGemv('N',3,3,1D0,CoeffI,3,RV1,1,0d0,RV3,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffI, 3, RV1, 1, 0d0, RV3, 1)
 
-      Call dGemv('N',3,3,1D0,CoeffE,3,RV2,1,0d0,RV4,1)
+        Call dGemv('N', 3, 3, 1D0, CoeffE, 3, RV2, 1, 0d0, RV4, 1)
 
-      J4=RV3(1)+RV4(1)
-      J5=RV3(2)+RV4(2)
-      J6=RV3(3)+RV4(3)
+        J4 = RV3(1) + RV4(1)
+        J5 = RV3(2) + RV4(2)
+        J6 = RV3(3) + RV4(3)
 
       End if
 
@@ -594,7 +598,7 @@ c... imaginary part J
       End
 
 c=======================================================
-c sostavlenie blochnoi matrix
+c Block matrix construction
 c=======================================================
       Subroutine Mblock(IA1,IA2,A1,A2,JA1,JA2,
      & RHS1,RHS2,nrow1,IA,A,JA,RHS)
@@ -603,161 +607,166 @@ c=======================================================
 c==============================================
 c Local variables
 c==============================================
-      Integer IA1(*),IA2(*),JA1(*),JA2(*)
-      Integer IA(*),JA(*)
-      Real*8 RHS1(*), RHS2(*),RHS(*)
-      Real*8 A1(*),A2(*),A(*)
+      Integer IA1(*), IA2(*), JA1(*), JA2(*)
+      Integer IA(*), JA(*)
+      Real*8  RHS1(*), RHS2(*), RHS(*)
+      Real*8  A1(*), A2(*), A(*)
 
       Integer nrow1
-      Integer s,t,h,l,i,k
+      Integer s, t, h, l, i, k
 
       include 'mmax.fd'
       Integer nvmax1
-      parameter(nvmax1=2*nvmax)
+      parameter(nvmax1 = 2 * nvmax)
 
       Integer  C2(nvmax1)
 c=============================================
 
-      IA(1)=1
-      C2(1)=0
-      s=1
-      t=1
-      h=1
-      l=1
+      IA(1) = 1
+      C2(1) = 0
+      s = 1
+      t = 1
+      h = 1
+      l = 1
 
-      Do i=2, (nRow1+1)
-      IA(i)=IA(i-1)+IA1(i)-IA1(i-1)+IA2(i)-IA2(i-1)
-      C2(i)=IA1(i)-IA1(i-1)
-      RHS(i-1)=RHS1(i-1)
+      Do i = 2, (nRow1 + 1)
+        IA(i)      = IA(i - 1) + 
+     &               IA1(i) - IA1(i - 1) + 
+     &               IA2(i) - IA2(i - 1)
+        C2(i)      = IA1(i) - IA1(i-1)
+        RHS(i - 1) = RHS1(i - 1)
 
-       Do k=(IA(i-1)+C2(i)-1), IA(i-1),-1
-          if ((IA1(i)-s). GT. 0) then
-              A(k)=A1(IA1(i)-s)
-              JA(k) =JA1(IA1(i)-s)
+        Do k = (IA(i - 1) + C2(i) - 1), IA(i - 1), -1
+          if ((IA1(i) - s) .GT. 0) then
+            A(k)  = A1(IA1(i) - s)
+            JA(k) = JA1(IA1(i) - s)
           End if
-             s=s+1
-       End do
-           s=1
+          s = s + 1
+        End do
+        s = 1
 
-       Do k=(IA(i)-1),(IA(i-1)+C2(i)),-1
-          if ((IA2(i)-t). GT. 0) then
-             A(k)=-A2(IA2(i)-t)
-             JA(k)=JA2(IA2(i)-t)+nRow1
+        Do k = (IA(i) - 1), (IA(i - 1) + C2(i)), -1
+          if ((IA2(i) - t) .GT. 0) then
+            A(k)  = -A2(IA2(i) - t)
+            JA(k) = JA2(IA2(i) - t) + nRow1
           End if
-             t=t+1
-          End do
-             t=1
+          t = t + 1
+        End do
+        t = 1
       End do
 
-      Do i=(nRow1+2), (2*nRow1+1)
-        IA(i)=IA(i-1)+IA1(i-nRow1)-IA1(i-1-nRow1)+
-     &  IA2(i-nRow1)-IA2(i-1-nRow1)
-        C2(i)=IA2(i-nRow1)-IA2(i-1-nRow1)
-        RHS(i-1)=RHS2(i-1-nrow1)
-        Do k=(IA(i-1)+C2(i)-1), IA(i-1),-1
-
-         if ((IA2(i-nRow1)-h). GT. 0) then
-              A(k)=A2(IA2(i-nRow1)-h)
-              JA(k) =JA2(IA2(i-nRow1)-h)
-         End if
-             h=h+1
-        End do
-           h=1
-
-        Do k=(IA(i)-1),(IA(i-1)+C2(i)),-1
-          if ((IA1(i-nRow1)-l). GT. 0) then
-               A(k)=A1(IA1(i-nRow1)-l)
-               JA(k)=JA1(IA1(i-nRow1)-l)+nRow1
+      Do i = (nRow1 + 2), (2 * nRow1 + 1)
+        IA(i) = IA(i - 1) + 
+     &          IA1(i - nRow1) - IA1(i - 1 - nRow1) +
+     &          IA2(i - nRow1) - IA2(i - 1 - nRow1)
+        C2(i) = IA2(i - nRow1) - IA2(i - 1 - nRow1)
+        RHS(i - 1) = RHS2(i - 1 - nrow1)
+        Do k = (IA(i - 1) + C2(i) - 1), IA(i - 1), -1
+          if ((IA2(i - nRow1) - h) .GT. 0) then
+            A(k)  = A2 (IA2(i - nRow1) - h)
+            JA(k) = JA2(IA2(i - nRow1) - h)
           End if
-             l=l+1
-         End do
-             l=1
+          h = h + 1
+        End do
+        h = 1
+
+        Do k = (IA(i) - 1), (IA(i - 1) + C2(i)), -1
+          if ((IA1(i - nRow1) - l) .GT. 0) then
+            A(k)  = A1(IA1(i - nRow1) - l)
+            JA(k) = JA1(IA1(i - nRow1) - l) + nRow1
+          End if
+          l = l + 1
+        End do
+        l = 1
       End do
 
       Return
       End
 
-
-
 c=======================================================
 c sostavlenie blochnoi matrix, when imaginary part first
 c=======================================================
-      Subroutine Mblock_Im(IA1,IA2,A1,A2,JA1,JA2,
-     & RHS1,RHS2,nrow1,IA,A,JA,RHS)
+      Subroutine Mblock_Im(IA1, IA2,
+     &                     A1, A2,
+     &                     JA1, JA2, 
+     &                     RHS1, RHS2,
+     &                     nrow1, IA, A, JA, RHS)
 
       implicit none
 c==============================================
 c Local variables
 c==============================================
-      Integer IA1(*),IA2(*),JA1(*),JA2(*)
-      Integer IA(*),JA(*)
-      Real*8 RHS1(*), RHS2(*),RHS(*)
-      Real*8 A1(*),A2(*),A(*)
+      Integer IA1(*), IA2(*), JA1(*), JA2(*)
+      Integer IA(*), JA(*)
+      Real*8 RHS1(*), RHS2(*), RHS(*)
+      Real*8 A1(*), A2(*), A(*)
 
       Integer nrow1
-      Integer s,t,h,l,i,k
+      Integer s, t, h, l, i, k
 
       include 'mmax.fd'
       Integer nvmax1
-      parameter(nvmax1=2*nvmax)
+      parameter(nvmax1 = 2 * nvmax)
 
       Integer  C2(nvmax1)
 c=============================================
 
-      IA(1)=1
-      C2(1)=0
-      s=1
-      t=1
-      h=1
-      l=1
+      IA(1) = 1
+      C2(1) = 0
+      s = 1
+      t = 1
+      h = 1
+      l = 1
 
-      Do i=2, (nRow1+1)
-      IA(i)=IA(i-1)+IA2(i)-IA2(i-1)+IA1(i)-IA1(i-1)
-      C2(i)=IA2(i)-IA2(i-1)
-      RHS(i-1)=-RHS2(i-1)
+      Do i = 2, (nRow1 + 1)
+        IA(i) = IA(i - 1) 
+     &        + IA2(i) - IA2(i - 1)
+     &        + IA1(i) - IA1(i - 1)
+        C2(i) = IA2(i) - IA2(i - 1)
+        RHS(i - 1) = -RHS2(i - 1)
 
-       Do k=(IA(i-1)+C2(i)-1), IA(i-1),-1
-          if ((IA2(i)-s). GT. 0) then
-              A(k)=A2(IA2(i)-s)
-              JA(k) =JA2(IA2(i)-s)
+        Do k = (IA(i - 1) + C2(i) - 1), IA(i - 1), -1
+          if ((IA2(i) - s) .GT. 0) then
+             A(k) =  A2(IA2(i) - s)
+            JA(k) = JA2(IA2(i) - s)
           End if
-             s=s+1
-       End do
-           s=1
+          s = s + 1
+        End do
+        s = 1
 
-       Do k=(IA(i)-1),(IA(i-1)+C2(i)),-1
-          if ((IA2(i)-t). GT. 0) then
-             A(k)=-A1(IA1(i)-t)
-             JA(k)=JA1(IA1(i)-t)+nRow1
+        Do k = (IA(i) - 1), (IA(i - 1) + C2(i)), -1
+          if ((IA2(i) - t) .GT. 0) then
+             A(k) = -A1(IA1(i) - t)
+            JA(k) = JA1(IA1(i) - t) + nRow1
           End if
-             t=t+1
-          End do
-             t=1
+          t = t + 1
+        End do
+        t = 1
       End do
 
-      Do i=(nRow1+2), (2*nRow1+1)
-        IA(i)=IA(i-1)+IA2(i-nRow1)-IA2(i-1-nRow1)+
-     &  IA1(i-nRow1)-IA1(i-1-nRow1)
-        C2(i)=IA1(i-nRow1)-IA1(i-1-nRow1)
-        RHS(i-1)=RHS1(i-1-nrow1)
-        Do k=(IA(i-1)+C2(i)-1), IA(i-1),-1
-
-         if ((IA1(i-nRow1)-h). GT. 0) then
-              A(k)=A1(IA1(i-nRow1)-h)
-              JA(k) =JA1(IA1(i-nRow1)-h)
-         End if
-             h=h+1
-        End do
-           h=1
-
-        Do k=(IA(i)-1),(IA(i-1)+C2(i)),-1
-          if ((IA2(i-nRow1)-l). GT. 0) then
-               A(k)=A2(IA2(i-nRow1)-l)
-               JA(k)=JA2(IA2(i-nRow1)-l)+nRow1
+      Do i = (nRow1 + 2), (2 * nRow1 + 1)
+        IA(i) = IA(i - 1) 
+     &        + IA2(i - nRow1) - IA2(i - 1 - nRow1)
+     &        + IA1(i - nRow1) - IA1(i - 1 - nRow1)
+        C2(i) = IA1(i - nRow1) - IA1(i - 1 - nRow1)
+        RHS(i - 1) = RHS1(i - 1 - nrow1)
+        Do k = (IA(i - 1) + C2(i) - 1), IA(i - 1), -1
+          if ((IA1(i - nRow1) - h) .GT. 0) then
+             A(k) =  A1(IA1(i - nRow1) - h)
+            JA(k) = JA1(IA1(i - nRow1) - h)
           End if
-             l=l+1
-         End do
-             l=1
+          h = h + 1
+        End do
+        h = 1
+
+        Do k = (IA(i) - 1), (IA(i - 1) + C2(i)), -1
+          if ((IA2(i - nRow1) - l) .GT. 0) then
+             A(k) =  A2(IA2(i - nRow1) - l)
+            JA(k) = JA2(IA2(i - nRow1) - l) + nRow1
+          End if
+          l = l + 1
+        End do
+        l = 1
       End do
 
       Return
@@ -765,16 +774,19 @@ c=============================================
 
 
 c============================================
-c vycheslenie opredelitelya
+c Determinant calculation
 c============================================
-      Subroutine Det(qw1,qw2,qw3,qw4,qw5,qw6,qw7,qw8,qw9,qw)
-      implicit none
+      Subroutine Det(qw1, qw2, qw3, qw4, qw5, qw6, qw7, qw8, qw9, qw)
+        implicit none
 
-      Real*8 qw1, qw2, qw3, qw4, qw5, qw6
-      Real*8 qw7,qw8,qw9,qw
+        Real*8 qw1, qw2, qw3, qw4, qw5, qw6, qw7, qw8, qw9, qw
 
-      qw=(qw1*qw5*qw9+qw7*qw2*qw6+qw3*qw4*qw8-
-     & qw3*qw5*qw7-qw2*qw4*qw9-qw1*qw8*qw6)
+        qw = (qw1 * qw5 * qw9 
+     &     + qw7 * qw2 * qw6 
+     &     + qw3 * qw4 * qw8
+     &     - qw3 * qw5 * qw7
+     &     - qw2 * qw4 * qw9
+     &     - qw1 * qw8 * qw6)
 
       Return
       End
@@ -783,7 +795,7 @@ c============================================
 c============================================
 c nahojdenie constant dlya ploskostei
 c============================================
-      Subroutine ConsPlane(XY1,XY2,XY3,A,B,C,in)
+      Subroutine ConsPlane(XY1, XY2, XY3, A, B, C, in)
       implicit none
 
       Real*8 XY1(*), XY2(*), XY3(*)
@@ -799,70 +811,88 @@ c============================================
       t2 = XY2(1) ** 2 + XY2(2) ** 2 + XY2(3) ** 2
       t1 = XY3(1) ** 2 + XY3(2) ** 2 + XY3(3) ** 2
 
-      if (t1.NE.0 .and. t2.NE.0 .and. t3.NE.0) then
-      Call Det(XY1(1),XY1(2),XY1(3),XY2(1),XY2(2),
-     & XY2(3),XY3(1),XY3(2),XY3(3),D)
+      if (t1 .NE. 0 .and.
+     &    t2 .NE. 0 .and.
+     &    t3 .NE. 0) then
+        Call Det(XY1(1), XY1(2), XY1(3),
+     &           XY2(1), XY2(2), XY2(3),
+     &           XY3(1), XY3(2), XY3(3),
+     &           D)
 
-      Call Det(-1D0,XY1(2),XY1(3),-1D0,XY2(2),
-     & XY2(3),-1D0,XY3(2),XY3(3),D1)
+        Call Det(-1D0, XY1(2), XY1(3),
+     &           -1D0, XY2(2), XY2(3),
+     &           -1D0, XY3(2), XY3(3),
+     &           D1)
 
-      Call Det(XY1(1),-1D0,XY1(3),XY2(1),-1D0,
-     & XY2(3),XY3(1),-1D0,XY3(3),D2)
+        Call Det(XY1(1), -1D0, XY1(3),
+     &           XY2(1), -1D0, XY2(3),
+     &           XY3(1), -1D0, XY3(3),
+     &           D2)
 
-      Call Det(XY1(1),XY1(2),-1D0,XY2(1),XY2(2),
-     & -1D0,XY3(1),XY3(2),-1D0,D3)
+        Call Det(XY1(1), XY1(2), -1D0,
+     &           XY2(1), XY2(2), -1D0,
+     &           XY3(1), XY3(2), -1D0,
+     &           D3)
 
-      if (D.NE.0) then
-        A = D1 / D
-        B = D2 / D
-        C = D3 / D
-        in = 1
-      else
-        stop 'determinant=0'
-      end if
+        if (D .NE. 0) then
+          A = D1 / D
+          B = D2 / D
+          C = D3 / D
+          in = 1
+        else
+          stop 'determinant=0'
+        end if
 
-      Else if (t1.EQ.0) then
-      D=XY2(1)*XY3(2)-XY2(2)*XY3(1)
-      D1=-(XY2(3)*XY3(2)-XY2(2)*XY3(3))
-      D2=-(XY2(1)*XY3(3)-XY2(3)*XY3(1))
+      Else if (t1 .EQ. 0) then
+        D  = XY2(1) * XY3(2)
+     &     - XY2(2) * XY3(1)
+        D1 = -XY2(3) * XY3(2) 
+     &     + XY2(2) * XY3(3)
+        D2 = -XY2(1) * XY3(3)
+     &     + XY2(3) * XY3(1)
 
-      if (D.NE.0) then
-      A=D1/D
-      B=D2/D
-      C=1d0
-      in=0
-      else
-      stop 'determinant=0'
-      end if
+        if (D .NE. 0) then
+          A = D1 / D
+          B = D2 / D
+          C = 1d0
+          in = 0
+        else
+          stop 'determinant=0'
+        end if
 
-      Else if (t2.EQ.0) then
-      D=XY1(1)*XY3(2)-XY1(2)*XY3(1)
-      D1=-(XY1(3)*XY3(2)-XY1(2)*XY3(3))
-      D2=-(XY1(1)*XY3(3)-XY1(3)*XY3(1))
+      Else if (t2 .EQ. 0) then
+        D = XY1(1) * XY3(2) 
+     &    - XY1(2) * XY3(1)
+        D1 = -XY1(3) * XY3(2) 
+     &     + XY1(2) * XY3(3)
+        D2 = -XY1(1) * XY3(3) 
+     &     + XY1(3) * XY3(1)
 
-      if (D.NE.0) then
-      A=D1/D
-      B=D2/D
-      C=1d0
-      in=0
-      else
-      stop 'determinant=0'
-      end if
+        if (D .NE. 0) then
+          A = D1 / D
+          B = D2 / D
+          C = 1d0
+          in = 0
+        else
+          stop 'determinant=0'
+        end if
 
-      Else if (t3.EQ.0) then
-      D=XY1(1)*XY2(2)-XY1(2)*XY2(1)
-      D1=-(XY1(3)*XY2(2)-XY1(2)*XY2(3))
-      D2=-(XY1(1)*XY2(3)-XY1(3)*XY2(1))
+      Else if (t3 .EQ. 0) then
+        D = XY1(1) * XY2(2) 
+     &    - XY1(2) * XY2(1)
+        D1 = -XY1(3) * XY2(2)
+     &     + XY1(2) * XY2(3)
+        D2 = -XY1(1) * XY2(3)
+     &     + XY1(3) * XY2(1)
 
-      if (D.NE.0) then
-      A=D1/D
-      B=D2/D
-      C=1
-      in=0
-      else
-      stop 'determinant=0'
-      end if
-
+        if (D .NE. 0) then
+          A = D1 / D
+          B = D2 / D
+          C = 1
+          in = 0
+        else
+          stop 'determinant=0'
+        end if
 
       end if
 
