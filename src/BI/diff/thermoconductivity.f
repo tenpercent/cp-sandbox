@@ -38,23 +38,33 @@ C === AniFEM stuff
         include 'fem3Dtet.fd'
         include 'assemble.fd'
 C === "sr" means "sparse row"
-        integer, dimension (1 : max_mesh_nodes) :: sr_row_nonzero_counter                 ! "JA"
-        integer, dimension (1 : max_nonzero_matrix_entries) :: sr_nonzero_entries_columns ! "IA"
-        real*8, dimension (1 : max_nonzero_matrix_entries) :: sr_nonzero_entries          ! "A"
+        integer, dimension (1 : max_mesh_nodes) :: 
+     &             sr_row_nonzero_counter                                                 ! "JA"
+        integer, dimension (1 : max_nonzero_matrix_entries) :: 
+     &             sr_nonzero_entries_columns                                             ! "IA"
+        real*8, dimension (1 : max_nonzero_matrix_entries) :: 
+     &             sr_nonzero_entries                                                     ! "A"
 C === "sle" means "system of linear equations"
         real*8, dimension (1 : max_mesh_nodes) :: sle_right_hand_side                     ! "RHS"
         real*8, dimension (1 : max_mesh_nodes) :: sle_solution                            ! "SOL"
         integer :: total_columns, total_rows                                              ! "nCol", "nRow"
-        integer :: operation_status                                                       ! "status"
+        integer :: matrix_type                                                            ! "status"
 C === seems that these are arrays of coefficients to be changed
         real*8, dimension (1 : 44) :: DATAFEM_R                                           ! "DATAFEMR"
         real*8, dimension (1 : 44) :: DATAFEM_I                                           ! "DATAFEMI"
         real*8, dimension (1 : 1) :: DATAFEM_E                                            ! "DATAFEME"
+c === external procedures block
+        external loadMani
+        external BilinearFormTemplate
+        external FEM3Dext
+        integer :: LSolver
+        external GMVscalarTet
 
 C === local variables block
 c === "ls" means "linear solver"
         logical :: ls_parameters_file_exists
         integer :: ls_method, ls_preconditioner
+        integer :: ls_status
 C =========================
 c ===   load solver parameters
         inquire(file = "solver.txt", exist = ls_parameters_file_exists)
@@ -88,5 +98,58 @@ c ===   load mesh
      &                work_buffer, 
      &                work_buffer, 
      &                "mesh.ani")
+c ===   impose Dirichlet boundary conditions
+c ===   but not now
 
+c ===   read parameters
+c ===   but not now
+
+c ===   set bit mask for matrix type
+        matrix_type = IOR(MATRIX_GENERAL, FORMAT_AMG)
+c ===   construct finite elements
+        call BilinearFormTemplate(
+     &                            total_mesh_nodes, 
+     &                            total_boundary_faces, 
+     &                            total_tetrahedra, 
+     &                            node_coordinates, 
+     &                            node_material_labels, 
+     &                            face_nodes, 
+     &                            face_material_labels, 
+     &                            tetrahedra_nodes, 
+     &                            tetrahedra_material_labels,
+     &                            FEM3Dext, 
+     &                            DATAFEM_R, 
+     &                            matrix_type,
+     &                            max_mesh_nodes, 
+     &                            max_nonzero_matrix_entries, 
+     &                            sr_nonzero_entries_columns, 
+     &                            sr_row_nonzero_counter, 
+     &                            sr_nonzero_entries, 
+     &                            sle_right_hand_side, 
+     &                            total_rows, 
+     &                            total_columns,
+     &                            max_work_memory_size, 
+     &                            work_buffer)
+c ===   launch solver
+        ls_status = LSolver(
+     &                 ls_method,
+     &                 ls_preconditioner, 
+     &                 total_rows,
+     &                 sr_row_nonzero_counter,
+     &                 sr_nonzero_entries_columns,
+     &                 sr_nonzero_entries,
+     &                 sle_right_hand_side,
+     &                 sle_solution)
+c ===   write results to VTK file
+        call GMVscalarTet(sle_solution, 
+     &                    "mesh.vtk", 
+     &                    10,
+     &                    total_mesh_nodes,
+     &                    node_coordinates, 
+     &                    total_tetrahedra,
+     &                    tetrahedra_nodes, 
+     &                    total_boundary_faces,
+     &                    face_nodes,
+     &                    face_material_labels)  
+c ===   I may be wrong about that      
       end program thermoconductivity
