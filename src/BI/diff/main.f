@@ -133,9 +133,9 @@ c ... check and load linear solver parameters
       inquire(file="solver.txt",exist=LSFEX) ! check the presence of solver.txt
 
       if (LSFEX) then                        ! solver.txt exists, load it 
-	open(12, file='solver.txt')
-	read(12,*) LSmeth,LSprec
-	close(12)
+	      open(12, file='solver.txt')
+	      read(12,*) LSmeth,LSprec
+      	close(12)
       else                                   ! otherwise use default settings
         LSmeth = 0
         LSprec = 0

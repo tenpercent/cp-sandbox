@@ -152,14 +152,21 @@ c     this condition should go the last one
 C ======================================================================
 c 3x3 diffusion tensor K
 C ======================================================================
+C     (x y z) are coordinates of a point where tensor is evaluated
+C     label: element or face
+C     iSYS: system buffer for information exchange
+C     DATA: is used to fill tensor coefficients
+C     Coef: storage of tensor coefficients
+C     Result tensor is a bilinear form
+C     In cartesian coordinates can be treated as matrix (3 x 3)
       Integer Function Ddiff(x, y, z, label, DATA, iSYS, Coef)
       implicit none
       include 'fem3Dtet.fd'
 
-      Real*8  x, y, z, DATA(*), Coef(9, *)
-      Integer label, iSYS(*)
+      Real*8  :: x, y, z, DATA(*), Coef(9, *)
+      Integer :: label, iSYS(*)
 
-      Integer i, j
+      Integer :: i, j
 
       iSYS(1) = 3
       iSYS(2) = 3
@@ -180,12 +187,13 @@ C ======================================================================
 
         Coef(3, 2) = DATA(5)
         Coef(2, 3) = DATA(5)
+c     symmetric indeed!
 
       Else
 
-        Coef(1, 1) = DATA(label+7)
-        Coef(2, 2) = DATA(label+7)
-        Coef(3, 3) = DATA(label+7)
+        Coef(1, 1) = DATA(label + 7)
+        Coef(2, 2) = DATA(label + 7)
+        Coef(3, 3) = DATA(label + 7)
 
         Coef(1, 2) = 0D0
         Coef(2, 1) = 0D0
@@ -195,6 +203,9 @@ C ======================================================================
 
         Coef(3, 2) = 0D0
         Coef(2, 3) = 0D0
+c     Identity multiplied by something
+c     That is the case of isothropic matherial
+
       End if
 
       Ddiff = TENSOR_SYMMETRIC
@@ -218,18 +229,18 @@ C ======================================================================
         iSYS(2) = 1
 
         If(label .EQ. 111) Then
-           Coef(1) = 0! Dirichlet at point
+           Coef(1) = 0          ! Dirichlet at point
            Dbc = BC_DIRICHLET
         Else If (label .EQ. 1) Then
            Coef(1) = 0
            Dbc = BC_NEUMANN     ! potok na poverhnosti tela
         Else If (label .EQ. DATA(1)) Then
-           Coef(1) = DATA(3)!1D0
+           Coef(1) = DATA(3)    ! 1D0
            Dbc = BC_NEUMANN
-        Else If (label.EQ.DATA(2)) Then
-           Coef(1) = -DATA(4)!-1D0
+        Else If (label .EQ. DATA(2)) Then
+           Coef(1) = -DATA(4)   ! -1D0
            Dbc = BC_NEUMANN
-        Else If (label.GT.1 .AND. label.LT.30) Then
+        Else If (label .GT. 1 .AND. label .LT. 30) Then
            Coef(1) = 0
            Dbc = BC_NEUMANN     ! potok na poverhnosti tela
         Else
@@ -246,6 +257,14 @@ C ======================================================================
 C ======================================================================
 c Right hand side F
 C ======================================================================
+C     (x y z) are coordinates of a point where tensor is evaluated
+C     label: element or face
+C     iSYS: system buffer for information exchange
+C     DATA: is used to fill tensor coefficients
+C     Coef: storage of tensor coefficients
+C     Result tensor is scalar
+C     i. e. function
+C     currently it is constant 0
       Integer Function Drhs(x, y, z, label, DATA, iSYS, Coef)
         implicit none
         Include 'fem3Dtet.fd'
@@ -263,28 +282,29 @@ C ======================================================================
       End
 
 c==========================================================================
-c povorot
+c Rotate Matrix
 c==========================================================================
       Subroutine matrRotate(XY1, XY2, XY3, XY4,
      &                      label, DATA, DATAR)
       implicit none
 
+      Integer label
 
       Real*8  XY1(*), XY2(*), XY3(*), XY4(*)
       Real*8  DATA(*), DATAR(*)
 
-C LOCAL VARIABLEs
+C === local variables
 
       Integer i, j, k, l
-      Integer label
 
-      Real*8 e1, e2, e3, ed ! e1 (this is a comment)
-      Real*8 m1, m2, m3, md ! e2
-      Real*8 n1, n2, n3, nd ! e3
-      Real*8 f1, f2, f3, fd !
+      Real*8 e1, e2, e3, ed ! first orthogonal unit vector; (XY1->XY2)
+      Real*8 m1, m2, m3, md ! second orthogonal unit vector
+      Real*8 n1, n2, n3, nd ! third orthogonal unit vector
+      Real*8 f1, f2, f3, fd ! vector (XY1->XY3)
 
       Real*8 KB(3,3), T(3,3), KF(3,3)
 c====================================================
+C === e{1,2,3} is unit vector (XY1 -> XY2)
       ed = sqrt ( (XY2(1) - XY1(1)) ** 2 + 
      &            (XY2(2) - XY1(2)) ** 2 +
      &            (XY2(3) - XY1(3)) ** 2)
@@ -292,27 +312,28 @@ c====================================================
       e2 = (XY2(2) - XY1(2)) / ed
       e3 = (XY2(3) - XY1(3)) / ed
 
-
+C === f{1,2,3} is unit vector (XY1 -> XY3)
       fd = sqrt( (XY3(1) - XY1(1)) ** 2 + 
      &           (XY3(2) - XY1(2)) ** 2 +
      &           (XY3(3) - XY1(3)) ** 2)
       f1 = (XY3(1) - XY1(1)) / fd
       f2 = (XY3(2) - XY1(2)) / fd
       f3 = (XY3(3) - XY1(3)) / fd
-
+C === m{1,2,3} is unit vector orthogonal to {e} and {f}
       md = sqrt( (e2 * f3 - e3 * f2) ** 2 + 
      &           (e3 * f1 - e1 * f3) ** 2 +
      &           (e1 * f2 - e2 * f1) ** 2)
       m1 = (e2 * f3 - e3 * f2) / md
       m2 = (e3 * f1 - e1 * f3) / md
       m3 = (e1 * f2 - e2 * f1) / md
-
+c === n{1,2,3} is unit vector orthogonal to {e} and {m}
       nd = sqrt( (e2 * m3 - m2 * e3) ** 2 + 
      &           (e3 * m1 - e1 * m3) ** 2 +
      &           (e1 * m2 - e2 * m1) ** 2)
       n1 = (e2 * m3 - m2 * e3) / nd
       n2 = (e3 * m1 - e1 * m3) / nd
       n3 = (e1 * m2 - e2 * m1) / nd
+c === now we have {e}, {m}, {n} mutually orthogonal
 
 c provodimost posle povorota k1
 c zapolnyeam matrix, posle povorota
@@ -327,11 +348,14 @@ c matrix povorota T
       T(2, 3) = n2
       T(3, 3) = n3
 
+C === {KF} is set to zero matrix (3 x 3)
       Do i = 1, 3
       	Do j = 1, 3
           KF(i, j) = 0D0
         End do
       End do
+
+C === {KB} is filled from {DATA}
 
       if (label .EQ. 1) then
         KB(1, 1) = DATA(5)
@@ -379,6 +403,8 @@ c ::: KF += T * KB * T.transposed
        	End do
       End do
 
+c ::: Remember {KF} to {DATAR} and exit
+
       DATAR(1) = KF(1, 1)
       DATAR(2) = KF(2, 1)
       DATAR(3) = KF(3, 1)
@@ -390,6 +416,7 @@ c ::: KF += T * KB * T.transposed
       End
 
 c ==============================================================
+c === Identity diffusion tensor
       Integer Function Ddiff1(x, y, z, label, DATA, iSYS, Coef)
       implicit none
       include 'fem3Dtet.fd'
@@ -469,7 +496,7 @@ c ======================================================================
       End
 
 c=======================================================
-c vicheslenie chuvstvitelnosti
+c Sensivity calculation
 c=======================================================
       Subroutine Sens(n, E11, E12, E21, E22, SnR, SnI)
       implicit none
@@ -600,8 +627,11 @@ c... imaginary part J
 c=======================================================
 c Block matrix construction
 c=======================================================
-      Subroutine Mblock(IA1,IA2,A1,A2,JA1,JA2,
-     & RHS1,RHS2,nrow1,IA,A,JA,RHS)
+      Subroutine Mblock(IA1, IA2, 
+     &                  A1, A2,
+     &                  JA1, JA2,
+     &                  RHS1, RHS2,
+     &                  nrow1, IA, A, JA, RHS)
 
       implicit none
 c==============================================
@@ -774,7 +804,10 @@ c=============================================
 
 
 c============================================
-c Determinant calculation
+c Real (3x3) matrix determinant calculation
+c       |qw1 qw2 qw3|
+c  qw = |qw4 qw5 qw6|
+c       |qw7 qw8 qw9|
 c============================================
       Subroutine Det(qw1, qw2, qw3, qw4, qw5, qw6, qw7, qw8, qw9, qw)
         implicit none
@@ -792,18 +825,18 @@ c============================================
       End
 
 
-c============================================
-c nahojdenie constant dlya ploskostei
-c============================================
+c===============================================================
+c  Construct plane equation {A}x + {B}y + {C}z + {in} = 0
+c  assuming that points {XY1}, {XY2}, {XY3} belong to that plane
+c===============================================================
       Subroutine ConsPlane(XY1, XY2, XY3, A, B, C, in)
       implicit none
 
-      Real*8 XY1(*), XY2(*), XY3(*)
-      Real*8 A, B, C
-      Real*8 D, D1, D2, D3
-      Real*8 t1, t2, t3
-      Integer in
-
+      Real*8  :: XY1(*), XY2(*), XY3(*)
+      Real*8  :: A, B, C
+      Real*8  :: D, D1, D2, D3
+      Real*8  :: t1, t2, t3
+      Integer :: in
 
       External Det
 
