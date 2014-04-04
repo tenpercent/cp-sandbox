@@ -17,7 +17,7 @@ set(DiffSimple_SRCS
 )
 
 set(DiffThermal_SRCS
-        thermoconductivity.f90
+        thermoconductivity.f
         forlibfem.f
         solver.f
         mmax.fd
