@@ -153,3 +153,75 @@ c ===   write results to VTK file
      &                    face_material_labels)  
 c ===   I may be wrong about that      
       end program thermoconductivity
+
+c === additional functions
+      function get_area(vertice_a, vertice_b, vertice_c)
+        implicit none  
+
+        real*8, dimension(1 : 3) :: vertice_a, vertice_b, vertice_c
+        real*8, dimension (1 : 3) :: vector_ab, vector_ac
+        real*8, dimension(1 : 3) :: cross_product
+        real*8 :: area = 0, get_area
+
+        interface
+          function get_cross_product (vector_ab, vector_ac)
+            implicit none
+            real*8, dimension(1 : 3) :: get_cross_product
+            real*8, dimension (1 : 3) :: vector_ab, vector_ac
+          end function get_cross_product
+
+          function get_3d_vector (vertice_a, vertice_b)
+            implicit none
+            real*8, dimension(1 : 3) :: get_3d_vector
+            real*8, dimension(1 : 3) :: vertice_a, vertice_b
+          end function get_3d_vector
+
+          function get_vector_length (vector)
+            implicit none
+            real*8 :: get_vector_length
+            real*8, dimension (1 : 3) :: vector
+          end function get_vector_length
+        end interface
+
+        vector_ab = get_3d_vector (vertice_a, vertice_b)
+        vector_ac = get_3d_vector (vertice_a, vertice_c)
+
+        cross_product = get_cross_product (vector_ab, vector_ac)
+
+        area = get_vector_length (cross_product)
+
+        get_area = area
+      end function get_area
+
+      function get_vector_length (vector)
+        implicit none
+        real*8, dimension(1 : 3) :: vector
+        real*8 :: get_vector_length
+
+        get_vector_length = 
+     &    sqrt (vector(1) ** 2 + vector(2) ** 2 + vector(3) ** 2)
+      end function get_vector_length
+
+      function get_cross_product (vector_ab, vector_ac)
+        implicit none
+        real*8, dimension(1 : 3) :: get_cross_product
+        real*8, dimension (1 : 3) :: vector_ab, vector_ac
+
+        get_cross_product(1) = vector_ab(2) * vector_ac(3) - 
+     &                         vector_ab(3) * vector_ac(2)
+        get_cross_product(2) = vector_ab(3) * vector_ac(1) - 
+     &                         vector_ab(1) * vector_ac(3)
+        get_cross_product(3) = vector_ab(1) * vector_ac(2) - 
+     &                         vector_ab(2) * vector_ac(1)
+        
+      end function get_cross_product
+
+      function get_3d_vector (vertice_a, vertice_b)
+        implicit none
+        real*8, dimension(1 : 3) :: get_3d_vector
+        real*8, dimension(1 : 3) :: vertice_a, vertice_b
+        integer :: i
+        do i = 1, 3
+          get_3d_vector(i) = vertice_b(i) - vertice_a(i)
+        end do
+      end function get_3d_vector
