@@ -155,13 +155,13 @@ c ===   I may be wrong about that
       end program thermoconductivity
 
 c === additional functions
-      function get_area(vertice_a, vertice_b, vertice_c)
+      function get_parallelogram_area(vertice_a, vertice_b, vertice_c)
         implicit none  
 
         real*8, dimension(1 : 3) :: vertice_a, vertice_b, vertice_c
         real*8, dimension (1 : 3) :: vector_ab, vector_ac
         real*8, dimension(1 : 3) :: cross_product
-        real*8 :: area = 0, get_area
+        real*8 :: get_parallelogram_area
 
         interface
           function get_cross_product (vector_ab, vector_ac)
@@ -188,10 +188,9 @@ c === additional functions
 
         cross_product = get_cross_product (vector_ab, vector_ac)
 
-        area = get_vector_length (cross_product)
+        get_parallelogram_area = get_vector_length (cross_product)
 
-        get_area = area
-      end function get_area
+      end function get_parallelogram_area
 
       function get_vector_length (vector)
         implicit none
