@@ -94,13 +94,16 @@
             real*8, dimension(1 : 3) :: vector_ab, vector_ac
           end function get_cross_product
         end interface
+
         vector_ab = get_3d_vector(vertice_a, vertice_b)
         vector_ac = get_3d_vector(vertice_a, vertice_c)
+
         get_normal = get_cross_product(vector_ab, vector_ac)
         norm_coef = 1 / get_vector_length(get_normal)
         do i = 1, 3
           get_normal(i) = get_normal(i) * norm_coef
         end do
+
       end function get_normal  
 
       program test_get_area
@@ -108,17 +111,19 @@
         real*8, dimension (1 : 3) :: vertice_a, vertice_b, vertice_c
         real*8 :: get_parallelogram_area
         real*8 :: area = 0
+        integer :: i
 c ===   read vertices
         write (*,*) "input vertice_a coordinates:"
-        read (*,*) vertice_a(1), vertice_a(2), vertice_a(3)
+        read (*,*) (vertice_a(i), i = 1, 3)
 
         write (*,*) "input vertice_b coordinates:"
-        read (*,*) vertice_b(1), vertice_b(2), vertice_b(3)
+        read (*,*) (vertice_b(i), i = 1, 3)
 
         write (*,*) "input vertice_c coordinates:"
-        read (*,*) vertice_c(1), vertice_c(2), vertice_c(3)
+        read (*,*) (vertice_c(i), i = 1, 3)
 c ===   calculate
         area = get_parallelogram_area(vertice_a, vertice_b, vertice_c)
 c ===   print parallelogram area
         write(*,'(A, 1F12.6)') "parallelogram area: ", area
+        
       end program test_get_area

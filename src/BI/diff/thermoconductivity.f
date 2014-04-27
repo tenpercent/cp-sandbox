@@ -51,7 +51,6 @@ C === "sle" means "system of linear equations"
         integer :: matrix_type                                                            ! "status"
 C === seems that these are arrays of coefficients to be changed
         real*8, dimension (1 : 44) :: DATAFEM_R                                           ! "DATAFEMR"
-        real*8, dimension (1 : 44) :: DATAFEM_I                                           ! "DATAFEMI"
         real*8, dimension (1 : 1) :: DATAFEM_E                                            ! "DATAFEME"
 c === external procedures block
         external loadMani
@@ -97,7 +96,7 @@ c ===   load mesh
      &                fixed_elements,
      &                work_buffer, 
      &                work_buffer, 
-     &                "mesh.ani")
+     &                "../../../../data/cube.ani")
 c ===   impose Dirichlet boundary conditions
 c ===   but not now
 
@@ -154,73 +153,161 @@ c ===   write results to VTK file
 c ===   I may be wrong about that      
       end program thermoconductivity
 
-c === additional functions
-      function get_parallelogram_area(vertice_a, vertice_b, vertice_c)
-        implicit none  
+c      Subroutine FEM3Dext(XY1, XY2, XY3, XY4,
+c     &                    lbE, lbF, lbR, lbP, DATAFEM, iSYS,
+c     &                    LDA, A, F, nRow, nCol,
+c     &                    templateR, templateC)
+C ======================================================================
+c      implicit none
+c      Include 'fem3Dtet.fd'
+c      Include 'assemble.fd'
 
-        real*8, dimension(1 : 3) :: vertice_a, vertice_b, vertice_c
-        real*8, dimension (1 : 3) :: vector_ab, vector_ac
-        real*8, dimension(1 : 3) :: cross_product
-        real*8 :: get_parallelogram_area
+c      Real*8  XY1(*), XY2(*), XY3(*), XY4(*)
+c      
+c      Integer lbE, lbF(4), lbR(6), lbP(4)
+c      Real*8  DATAFEM(*)
+c      Integer iSYS(*), LDA, nRow, nCol
 
-        interface
-          function get_cross_product (vector_ab, vector_ac)
-            implicit none
-            real*8, dimension(1 : 3) :: get_cross_product
-            real*8, dimension (1 : 3) :: vector_ab, vector_ac
-          end function get_cross_product
+c      Real*8  A(LDA, *), F(*)
+c      Integer templateR(*), templateC(*)
 
-          function get_3d_vector (vertice_a, vertice_b)
-            implicit none
-            real*8, dimension(1 : 3) :: get_3d_vector
-            real*8, dimension(1 : 3) :: vertice_a, vertice_b
-          end function get_3d_vector
+c      return
+c      end
+c====================================================================
+      function det2 (x11, x12, x21, x22)
+      implicit none
 
-          function get_vector_length (vector)
-            implicit none
-            real*8 :: get_vector_length
-            real*8, dimension (1 : 3) :: vector
-          end function get_vector_length
-        end interface
+          real*8 :: x11, x12, x21, x22, det2
 
-        vector_ab = get_3d_vector (vertice_a, vertice_b)
-        vector_ac = get_3d_vector (vertice_a, vertice_c)
+          det2 = x11 * x22 - x21 * x12
 
-        cross_product = get_cross_product (vector_ab, vector_ac)
+      return
+      end function det2
+c====================================================================
+      function det4 (x11, x12, x13, x14,
+     &               x21, x22, x23, x24,
+     &               x31, x32, x33, x34,
+     &               x41, x42, x43, x44)
+      implicit none
 
-        get_parallelogram_area = get_vector_length (cross_product)
+          real*8 :: x11, x12, x13, x14,
+     &              x21, x22, x23, x24,
+     &              x31, x32, x33, x34,
+     &              x41, x42, x43, x44
 
-      end function get_parallelogram_area
+          real*8 :: det4, det2
 
-      function get_vector_length (vector)
-        implicit none
-        real*8, dimension(1 : 3) :: vector
-        real*8 :: get_vector_length
+          det4 = det2 (x11, x12, x21, x22) * det2 (x33, x34, x43, x44) -
+     &           det2 (x13, x14, x23, x24) * det2 (x31, x32, x41, x42)
 
-        get_vector_length = 
-     &    sqrt (vector(1) ** 2 + vector(2) ** 2 + vector(3) ** 2)
-      end function get_vector_length
+      return
+      end function det4
+c====================================================================
+      function tetrahedron_volume (p1, p2, p3, p4)
+      implicit none
 
-      function get_cross_product (vector_ab, vector_ac)
-        implicit none
-        real*8, dimension(1 : 3) :: get_cross_product
-        real*8, dimension (1 : 3) :: vector_ab, vector_ac
+          real*8, dimension(1:3) :: p1, p2, p3, p4
+          real*8 :: tetrahedron_volume, det4
 
-        get_cross_product(1) = vector_ab(2) * vector_ac(3) - 
-     &                         vector_ab(3) * vector_ac(2)
-        get_cross_product(2) = vector_ab(3) * vector_ac(1) - 
-     &                         vector_ab(1) * vector_ac(3)
-        get_cross_product(3) = vector_ab(1) * vector_ac(2) - 
-     &                         vector_ab(2) * vector_ac(1)
-        
-      end function get_cross_product
+          tetrahedron_volume = abs (det4 (1d0, p1(1), p1(2), p1(3),
+     &                               1d0, p2(1), p2(2), p2(3),
+     &                               1d0, p3(1), p3(2), p3(3),
+     &                               1d0, p4(1), p4(2), p4(3)) / 6d0)
 
-      function get_3d_vector (vertice_a, vertice_b)
-        implicit none
-        real*8, dimension(1 : 3) :: get_3d_vector
-        real*8, dimension(1 : 3) :: vertice_a, vertice_b
+      return
+      end function tetrahedron_volume
+c====================================================================
+      function euclid_distance (p1, p2)
+      implicit none
+
+        real*8, dimension (1:3) :: p1, p2
+        real*8 :: euclid_distance
+
+        euclid_distance = sqrt((p1(1) - p2(1)) ** 2 + 
+     &                          (p1(2) - p2(2)) ** 2 + 
+     &                          (p1(3) - p2(3)) ** 2)
+      return
+      end function euclid_distance
+c====================================================================
+      function search_nearest (node_coordinates, 
+     &                         total_mesh_nodes, 
+     &                         point_coordinates)
+      implicit none
+        integer :: total_mesh_nodes
+        real*8, dimension (1:3, 1:total_mesh_nodes) :: node_coordinates
+        real*8, dimension (1:3) :: point_coordinates
+        integer :: search_nearest
         integer :: i
-        do i = 1, 3
-          get_3d_vector(i) = vertice_b(i) - vertice_a(i)
+
+        real*8 :: euclid_distance
+
+        real*8 :: min_distance, current_distance
+
+        min_distance = euclid_distance (
+     &      point_coordinates, 
+     &      node_coordinates(1 : 3, 1))
+        current_distance = min_distance
+
+        do i = 2, total_mesh_nodes
+            current_distance = euclid_distance (
+     &          point_coordinates, 
+     &          node_coordinates(1 : 3, i))
+            if (current_distance < min_distance) then
+                min_distance = current_distance
+                search_nearest = i
+            end if
         end do
-      end function get_3d_vector
+
+      return
+      end function search_nearest
+
+c====================================================================
+      function delta_dirac(tetrahedra_nodes, 
+     &                     total_tetrahedra, 
+     &                     node_coordinates, 
+     &                     total_mesh_nodes, 
+     &                     point_coordinates)
+      implicit none
+
+        integer :: total_tetrahedra, total_mesh_nodes
+        integer, dimension (1 : 4, 1 : total_tetrahedra) ::
+     &      tetrahedra_nodes
+        real*8, dimension (1 : 3, 1 : total_mesh_nodes) ::
+     &      node_coordinates
+        real*8, dimension (1 : 3) :: point_coordinates
+        real*8 :: delta_dirac
+
+        integer :: nearest_node, search_nearest
+
+        external backReferences
+
+        integer, parameter :: L = 4, M = 4, max_adjacent = 1000
+
+        integer, dimension (1 : M, 1 : max_adjacent) :: IPE
+
+        integer, dimension (1 : total_mesh_nodes) :: nEP, IEP
+
+        real*8 :: volume = 0d0
+        real*8 :: calVol
+
+        integer :: i
+
+        nearest_node = search_nearest(node_coordinates, 
+     &                         total_mesh_nodes, 
+     &                         point_coordinates)
+
+        call backReferences (total_mesh_nodes, 
+     &                       total_tetrahedra, 
+     &                       L, M, IPE, nEP, IPE) 
+
+        do i = nEP(nearest_node) + 1, nEP(nearest_node + 1)
+            volume = volume + abs(calVol (IPE(1, i), 
+     &                                    IPE(2, i), 
+     &                                    IPE(3, i), 
+     &                                    IPE(4, i)))
+        end do
+
+        delta_dirac = 4d0 / volume
+      return
+      end function delta_dirac
+
