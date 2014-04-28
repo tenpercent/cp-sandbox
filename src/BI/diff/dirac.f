@@ -154,11 +154,10 @@ c====================================================================
 
         external backReferences
 
-        integer, parameter :: L = 4, M = 4, max_adjacent = 1000
+        integer, parameter :: L = 4, M = 4
 
-        integer, dimension (1 : M, 1 : max_adjacent) :: IPE
-
-        integer, dimension (1 : total_mesh_nodes) :: nEP, IEP
+        integer, dimension (1 : total_mesh_nodes) :: nEP
+        integer, dimension (1 : 4 * total_tetrahedra) :: IEP
 
         real*8 :: volume = 0d0
         real*8 :: calVol
@@ -168,19 +167,35 @@ c====================================================================
         nearest_node = search_nearest(node_coordinates, 
      &                         total_mesh_nodes, 
      &                         point_coordinates)
+c === check if nearest_node is not 0
+        write (*, *) nearest_node
 
         call backReferences (total_mesh_nodes, 
      &                       total_tetrahedra, 
-     &                       L, M, IPE, nEP, IPE) 
+     &                       L, M, tetrahedra_nodes, nEP, IEP) 
 
-        do i = nEP(nearest_node) + 1, nEP(nearest_node + 1)
-            volume = volume + abs(calVol (IPE(1, i), 
-     &                                    IPE(2, i), 
-     &                                    IPE(3, i), 
-     &                                    IPE(4, i)))
+c === check if tetrahedra_nodes is not empty
+c        do i = 1, total_tetrahedra
+c          write (*,*) tetrahedra_nodes(1:4, i)
+c        end do
+c        write (*,*) nEP(1 : total_mesh_nodes)
+
+        do i = nEP(nearest_node - 1) + 1, nEP(nearest_node)
+c === print tetrahedra which contain nearest node; fail
+            write (*, *) tetrahedra_nodes(1 : 4, IEP(i))
+            volume = volume + abs(
+     &        calVol (
+     &          node_coordinates(1 : 3, tetrahedra_nodes(1, IEP(i))), 
+     &          node_coordinates(1 : 3, tetrahedra_nodes(2, IEP(i))),
+     &          node_coordinates(1 : 3, tetrahedra_nodes(3, IEP(i))), 
+     &          node_coordinates(1 : 3, tetrahedra_nodes(4, IEP(i)))))
         end do
 
-        delta_dirac = 4d0 / volume
+        if (volume .eq. 0) then
+          write (*,*) "volume eq 0"
+          delta_dirac = 1
+        else
+          delta_dirac = 4d0 / volume
+        end if
       return
       end function delta_dirac
-      
