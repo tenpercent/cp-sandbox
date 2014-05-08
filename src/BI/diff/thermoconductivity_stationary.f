@@ -136,10 +136,20 @@ c       no extra data is provided for the user subroutines Dxxxx
         DATAFEM(4) = nearest_node_coordinates(3)
 c === test if mesh is initialized
 
-c        write (*,*) "boundary labels: "
+c        write (*,*) "boundary labels before: "
 c        do i = 1, total_boundary_faces
 c            write (*, *) face_material_labels(i)
 c        end do
+
+c        write (*,*) "element labels before: "
+c        do i = 1, total_tetrahedra
+c            write (*, *) tetrahedra_material_labels(i)
+c        end do
+
+        write (*,*) "point labels before: "
+        do i = 1, total_mesh_nodes
+            write (*, *) node_material_labels(i)
+        end do
 
 c ===   construct finite elements
         call BilinearFormTemplate(
@@ -169,10 +179,20 @@ c ===   construct finite elements
         write (*,*) "BilinearFormTemplate has finished!"
 
 c ===   test what's up with mesh
-c        write (*,*) "boundary labels: "
+c        write (*,*) "boundary labels after: "
 c        do i = 1, total_boundary_faces
 c            write (*, *) face_material_labels(i)
 c        end do
+
+c        write (*,*) "element labels after: "
+c        do i = 1, total_tetrahedra
+c            write (*, *) tetrahedra_material_labels(i)
+c        end do
+
+        write (*,*) "point labels after: "
+        do i = 1, total_mesh_nodes
+            write (*, *) node_material_labels(i)
+        end do
 
 c ===   launch solver
         ls_status = LSolver(
