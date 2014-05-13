@@ -91,7 +91,7 @@ c====================================================================
      &                     node_coordinates, 
      &                     total_mesh_nodes, 
      &                     point_coordinates,
-     &                     nearest_node_coordinates)
+     &                     nearest_node_index)
       implicit none
 
         integer :: total_tetrahedra, total_mesh_nodes
@@ -99,14 +99,14 @@ c====================================================================
      &      tetrahedra_nodes
         real*8, dimension (1 : 3, 1 : total_mesh_nodes) ::
      &      node_coordinates
-        real*8, dimension (1 : 3) :: point_coordinates, 
-     &      nearest_node_coordinates
+        real*8, dimension (1 : 3) :: point_coordinates
         real*8 :: delta_dirac
 
-        integer :: nearest_node, search_nearest
-
+        integer :: nearest_node_index
+c =============
+        integer :: search_nearest
         external backReferences
-
+c =============
         integer, parameter :: L = 4, M = 4
 
         integer, dimension (1 : total_mesh_nodes) :: nEP
@@ -117,17 +117,15 @@ c====================================================================
 
         integer :: i
 
-        nearest_node = search_nearest(node_coordinates, 
+        nearest_node_index = search_nearest(node_coordinates, 
      &                         total_mesh_nodes, 
      &                         point_coordinates)
-        nearest_node_coordinates = 
-     &    node_coordinates(1 : 3, nearest_node)
 
         call backReferences (total_mesh_nodes, 
      &                       total_tetrahedra, 
      &                       L, M, tetrahedra_nodes, nEP, IEP) 
 
-        do i = nEP(nearest_node - 1) + 1, nEP(nearest_node)
+        do i = nEP(nearest_node_index - 1) + 1, nEP(nearest_node_index)
             volume = volume + abs(
      &        calVol (
      &          node_coordinates(1 : 3, tetrahedra_nodes(1, IEP(i))), 

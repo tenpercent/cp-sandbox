@@ -13,6 +13,8 @@
 
         real*8, dimension (1 : 3, 1 : max_mesh_nodes) :: 
      &             node_coordinates                                                       ! "vrt"
+        common /vertices/ node_coordinates
+
         integer, dimension (1 : max_mesh_nodes) :: node_material_labels                   ! "labelP"
 
         integer, dimension (1 : 4, 1 : max_tetrahedra) ::
@@ -50,7 +52,7 @@ C === "sle" means "system of linear equations"
         integer :: total_columns, total_rows                                              ! "nCol", "nRow"
         integer :: matrix_type                                                            ! "status"
 C ===   whatever
-        real*8, dimension (1 : 4) :: DATAFEM
+        real*8, dimension (1 : 2) :: DATAFEM
 c === external procedures block
         external loadMani
         external BilinearFormTemplate
@@ -67,9 +69,8 @@ C =========================
         real*8 :: delta_dirac
         real*8 :: delta_dirac_value
         real*8, dimension (1 : 3) :: source_coordinates
-        real*8, dimension (1 : 3) :: nearest_node_coordinates
+        integer :: nearest_node_index
         data source_coordinates /3 * 5d-1/
-        common /dirac/ delta_dirac_value, nearest_node_coordinates
 
         integer :: i
 c ===   load solver parameters
@@ -122,7 +123,7 @@ c === mesh is ready; calculate dirac function
      &                     node_coordinates, 
      &                     total_mesh_nodes, 
      &                     source_coordinates,
-     &                     nearest_node_coordinates)
+     &                     nearest_node_index)
         write (*,*) "Dirac function has been computed!"
         write (*,*) delta_dirac_value
         
@@ -131,9 +132,7 @@ c ===   set bit mask for matrix type
 c ===   Assemble the stiffness matrix
 c       no extra data is provided for the user subroutines Dxxxx
         DATAFEM(1) = delta_dirac_value
-        DATAFEM(2) = nearest_node_coordinates(1)
-        DATAFEM(3) = nearest_node_coordinates(2)
-        DATAFEM(4) = nearest_node_coordinates(3)
+        DATAFEM(2) = nearest_node_index
 c === test if mesh is initialized
 
 c        write (*,*) "boundary labels before: "
@@ -146,10 +145,10 @@ c        do i = 1, total_tetrahedra
 c            write (*, *) tetrahedra_material_labels(i)
 c        end do
 
-        write (*,*) "point labels before: "
-        do i = 1, total_mesh_nodes
-            write (*, *) node_material_labels(i)
-        end do
+c        write (*,*) "point labels before: "
+c        do i = 1, total_mesh_nodes
+c            write (*, *) node_material_labels(i)
+c        end do
 
 c ===   construct finite elements
         call BilinearFormTemplate(
@@ -189,10 +188,10 @@ c        do i = 1, total_tetrahedra
 c            write (*, *) tetrahedra_material_labels(i)
 c        end do
 
-        write (*,*) "point labels after: "
-        do i = 1, total_mesh_nodes
-            write (*, *) node_material_labels(i)
-        end do
+c        write (*,*) "point labels after: "
+c        do i = 1, total_mesh_nodes
+c            write (*, *) node_material_labels(i)
+c        end do
 
 c ===   launch solver
         ls_status = LSolver(
@@ -282,7 +281,7 @@ C LOCAL VARIABLEs
       DATA     iref /1,2,3,4,1/
       
       Logical print_mesh_labels
-      parameter (print_mesh_labels = .true.) 
+      parameter (print_mesh_labels = .false.) 
 
 C ======================================================================
       nRow = 4
@@ -464,28 +463,64 @@ C ======================================================================
       Include 'fem3Dtet.fd'
 
       Real*8  x, y, z, DATA(*), Coef(*)
-      Integer label, iSYS(*)
+      Integer label, iSYS(21)
 
       real*8 dirac_value
-      real*8 dirac_nz_coordinates (3) 
+      integer nearest_node_index
 
       real*8 min_dist
-      parameter (min_dist = 1d-6)
 
-      dirac_value = DATA(1)
-      dirac_nz_coordinates(1 : 3) = DATA(2 : 4)
+      integer tet_nodes(4)
+      logical calculate_dirac
+      integer temp
+
+c === too bad
+
+      integer max_mesh_nodes
+      parameter(max_mesh_nodes = 70000)
+
+      real*8  node_coordinates(3, max_mesh_nodes)
+
+      common /vertices/ node_coordinates
+      real*8 point(3)
+      integer i
+
+      real*8 linterpvalue
+c ==========      
 
       iSYS(1) = 1
       iSYS(2) = 1
 
-      if    (abs(x - dirac_nz_coordinates(1)) < min_dist
-     & .and. abs(y - dirac_nz_coordinates(2)) < min_dist
-     & .and. abs(z - dirac_nz_coordinates(3)) < min_dist
-     &    ) then 
-        coef(1) = dirac_value
-      else
-        coef(1) = 0d0
+      dirac_value = DATA(1)
+      nearest_node_index = DATA(2)
+
+      tet_nodes(1 : 4) = iSYS(4 : 7)
+
+      do i = 1, 4
+        if (tet_nodes(i) .eq. nearest_node_index) then
+          calculate_dirac = .true.
+
+          temp = tet_nodes(i)
+          tet_nodes(i) = tet_nodes(4)
+          tet_nodes(4) = temp
+        end if
+      end do
+
+      coef(1) = 0d0
+
+      if (calculate_dirac) then
+        point(1) = x
+        point(2) = y
+        point(3) = z
+        coef(1) = dirac_value * 
+     &    LInterpValue (node_coordinates(:, tet_nodes(1)), 
+     &                  node_coordinates(:, tet_nodes(2)), 
+     &                  node_coordinates(:, tet_nodes(3)),
+     &                  node_coordinates(:, tet_nodes(4)), 
+     &                  point)
       end if
+
+c      write (*, '(a, 3f6.3)') "drhs is calculated in ", x, y, z
 
       Drhs = TENSOR_SCALAR
 
