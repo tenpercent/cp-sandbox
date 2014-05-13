@@ -382,7 +382,11 @@ C ======================================================================
           implicit none
           include 'fem3Dtet.fd'
 
-          Real*8  x, y, z, DATA(*), Coef(9, *)
+          Real*8  x, y, z, DATA(*)
+
+c          real*8 Coef(9, *)
+          real*8 coef(*)
+
           Integer label, iSYS(*)
 
           Integer i, j
@@ -391,20 +395,25 @@ C ======================================================================
           parameter (thermo_coefficient = 1d0)
 c === probably should fix it later      
 
-          iSYS(1) = 3
-          iSYS(2) = 3
+c          iSYS(1) = 3
+c          iSYS(2) = 3
 
-          Do i = 1, 3
-             Do j = 1, 3
-                Coef(i, j) = 0D0
-             End do
-          End do
+c          Do i = 1, 3
+c             Do j = 1, 3
+c                Coef(i, j) = 0D0
+c             End do
+c          End do
 
-          Coef(1, 1) = thermo_coefficient
-          Coef(2, 2) = thermo_coefficient
-          Coef(3, 3) = thermo_coefficient
+c          Coef(1, 1) = thermo_coefficient
+c          Coef(2, 2) = thermo_coefficient
+c          Coef(3, 3) = thermo_coefficient
+          iSYS(1) = 1
+          iSYS(2) = 1
 
-          Ddiff = TENSOR_SYMMETRIC
+          coef(1) = thermo_coefficient
+
+c          Ddiff = TENSOR_SYMMETRIC
+          Ddiff = TENSOR_SCALAR
 
           Return
       End
@@ -466,8 +475,7 @@ C ======================================================================
           Integer label, iSYS(*)
 c === local variables
           integer tet_nodes(4)
-          logical calculate_dirac
-          integer temp
+          integer swap_temporary
           real*8 point(3)
           integer i
 c === too bad
@@ -478,6 +486,7 @@ c === too bad
 c === ./dirac.f      
           real*8 dirac_value
           integer nearest_node_index
+          logical calculate_dirac
 c === ./lininterp.f
           real*8 linterpvalue
 c ==========      
@@ -496,9 +505,9 @@ c ==========
               if (tet_nodes(i) .eq. nearest_node_index) then
                   calculate_dirac = .true.
                   
-                  temp = tet_nodes(i)
+                  swap_temporary = tet_nodes(i)
                   tet_nodes(i) = tet_nodes(4)
-                  tet_nodes(4) = temp
+                  tet_nodes(4) = swap_temporary
                   goto 10
               end if
           end do
