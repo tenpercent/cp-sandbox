@@ -204,7 +204,7 @@ c ===   launch solver
      &                 sle_right_hand_side,                              ! b
      &                 sle_solution)                                     ! x
 
-      write (*,*) "LSolver has finished!"
+        write (*,*) "LSolver has finished!"
 
 c ===   write results to VTK file
         call GMVscalarTet(sle_solution, 
@@ -218,7 +218,7 @@ c ===   write results to VTK file
      &                    face_nodes,
      &                    face_material_labels) 
 
-      write (*,*) "GMVscalarTet has finished!"
+        write (*,*) "GMVscalarTet has finished!"
 
 c ===   I may be wrong about that      
       end program thermoconductivity
@@ -255,123 +255,123 @@ c ======================================================================
      &                    LDA, A, F, nRow, nCol,
      &                    templateR, templateC)
 C ======================================================================
-      implicit none
-      Include 'fem3Dtet.fd'
-      Include 'assemble.fd'
+          implicit none
+          Include 'fem3Dtet.fd'
+          Include 'assemble.fd'
 
-      Real*8  XY1(*), XY2(*), XY3(*), XY4(*)
-      
-      Integer lbE, lbF(4), lbR(6), lbP(4)
-      Real*8  DATAFEM(*)
-      Integer iSYS(*), LDA, nRow, nCol
+          Real*8  XY1(*), XY2(*), XY3(*), XY4(*)
+          
+          Integer lbE, lbF(4), lbR(6), lbP(4)
+          Real*8  DATAFEM(*)
+          Integer iSYS(*), LDA, nRow, nCol
 
-      Real*8  A(LDA, *), F(*)
-      Integer templateR(*), templateC(*)
+          Real*8  A(LDA, *), F(*)
+          Integer templateR(*), templateC(*)
 
 C LOCAL VARIABLEs
-      Integer  Ddiff, Dreact, Drhs, Dbc
-      External Ddiff, Dreact, Drhs, Dbc
+          Integer  Ddiff, Dreact, Drhs, Dbc
+          External Ddiff, Dreact, Drhs, Dbc
 
-      Real*8   B(4, 4), C(3, 3), G(3), XYP(3, 4)
-      Real*8   x, y, z, eBC(1)
+          Real*8   B(4, 4), C(3, 3), G(3), XYP(3, 4)
+          Real*8   x, y, z, eBC(1)
 
-      Integer  i,j,k,l,m, ir, ic, label, ibc
-  
-      Integer  iref(5), ip(4)
-      DATA     iref /1,2,3,4,1/
+          Integer  i,j,k,l,m, ir, ic, label, ibc
       
-      Logical print_mesh_labels
-      parameter (print_mesh_labels = .false.) 
+          Integer  iref(5), ip(4)
+          DATA     iref /1,2,3,4,1/
+          
+          Logical print_mesh_labels
+          parameter (print_mesh_labels = .false.) 
 
 C ======================================================================
-      nRow = 4
-      nCol = 4
+          nRow = 4
+          nCol = 4
 
 c ... set up templated degrees of freedom for rows and columns. 
 c     used convention 'V'=vertex d.o.f. and 'R'=edge d.o.f.
-      Do i = 1, 4
-         templateC(i) = Vdof
-         templateR(i) = Vdof
-      End do
+          Do i = 1, 4
+              templateC(i) = Vdof
+              templateR(i) = Vdof
+          End do
 
-      if (print_mesh_labels) then
-          write (*,'(a, 1i2)') "element label: ", lbE
-          write (*,'(a, 4i2)') "face labels: ", lbF
-          write (*,'(a, 6i2)') "edge labels: ", lbR
-          write (*,'(a, 4i2)') "point labels: ", lbP
-      end if
+          if (print_mesh_labels) then
+              write (*,'(a, 1i2)') "element label: ", lbE
+              write (*,'(a, 4i2)') "face labels: ", lbF
+              write (*,'(a, 6i2)') "edge labels: ", lbR
+              write (*,'(a, 4i2)') "point labels: ", lbP
+          end if
 
 c ... compute the stiffness matrix (M)
-      label = lbE
+          label = lbE
 
 c     A(1:4,1:4) is elemental vector elliptic operator;
 c     in other words, for the bilinear form <grad(P1), grad(P1)>
-      Call fem3Dtet(XY1, XY2, XY3, XY4,
-     &              GRAD, FEM_P1, GRAD, FEM_P1,
-     &              label, Ddiff, DATAFEM, iSYS, 2,
-     &              LDA, A, ir, ic)
+          Call fem3Dtet(XY1, XY2, XY3, XY4,
+     &                  GRAD, FEM_P1, GRAD, FEM_P1,
+     &                  label, Ddiff, DATAFEM, iSYS, 2,
+     &                  LDA, A, ir, ic)
 c === === === === === === === === === === === === === === ===
 
 c     B(1:4,1:4) is elemental mass matrix;
 c     in other words, for the bilinear form <P1, P1>
-      Call fem3Dtet(XY1, XY2, XY3, XY4,
-     &              IDEN, FEM_P1, IDEN, FEM_P1,
-     &              label, Dreact, DATAFEM, iSYS, 5,
-     &              4, B, ir, ic)
+          Call fem3Dtet(XY1, XY2, XY3, XY4,
+     &                  IDEN, FEM_P1, IDEN, FEM_P1,
+     &                  label, Dreact, DATAFEM, iSYS, 5,
+     &                  4, B, ir, ic)
 
-      Do i = 1, 4
-         Do j = 1, 4
-            A(i, j) = A(i, j) + B(i, j) 
-         End do
-      End do
+          Do i = 1, 4
+              Do j = 1, 4
+                  A(i, j) = A(i, j) + B(i, j) 
+              End do
+          End do
 
 c ... compute the right hand side vector using external function Drhs
 c     in other words, the linear form <Drhs(x), P1> 
-      Call fem3Dtet(XY1, XY2, XY3, XY4,
-     &              IDEN, FEM_P0, IDEN, FEM_P1, 
-     &              lbE, Drhs, DATAFEM, iSYS, 5,
-     &              LDA, F, ir, ic)
+          Call fem3Dtet(XY1, XY2, XY3, XY4,
+     &                  IDEN, FEM_P0, IDEN, FEM_P1, 
+     &                  lbE, Drhs, DATAFEM, iSYS, 5,
+     &                  LDA, F, ir, ic)
 
 c ... impose the Neumann boundary conditions
-      Do i = 1, 3
-         XYP(i, 1) = XY1(i)
-         XYP(i, 2) = XY2(i)
-         XYP(i, 3) = XY3(i)
-         XYP(i, 4) = XY4(i)
-      End do
+          Do i = 1, 3
+              XYP(i, 1) = XY1(i)
+              XYP(i, 2) = XY2(i)
+              XYP(i, 3) = XY3(i)
+              XYP(i, 4) = XY4(i)
+          End do
 
-      Do k = 1, 4
+          Do k = 1, 4
 c === iterate through faces
-        if (lbF(k) .eq. 1) then      
-          l = iref(k + 1)
-          m = iref(l + 1)
+              if (lbF(k) .eq. 1) then      
+                  l = iref(k + 1)
+                  m = iref(l + 1)
 
-          x = (XYP(1, k) + XYP(1, l) + XYP(1, m)) / 3
-          y = (XYP(2, k) + XYP(2, l) + XYP(2, m)) / 3
-          z = (XYP(3, k) + XYP(3, l) + XYP(3, m)) / 3
+                  x = (XYP(1, k) + XYP(1, l) + XYP(1, m)) / 3
+                  y = (XYP(2, k) + XYP(2, l) + XYP(2, m)) / 3
+                  z = (XYP(3, k) + XYP(3, l) + XYP(3, m)) / 3
 
-          ibc = Dbc(x, y, z, lbF(k), DATAFEM, iSYS, eBC)
-           
-          label = lbF(k)
+                  ibc = Dbc(x, y, z, lbF(k), DATAFEM, iSYS, eBC)
+                   
+                  label = lbF(k)
 
-          Call fem3Dtri(XYP(1, k), XYP(1, l), XYP(1, m),
-     &                    IDEN, FEM_P0, IDEN, FEM_P1, 
-     &                    label, Dbc, DATAFEM, iSYS, 4, 
-     &                    3, G, ir, ic)
+                  Call fem3Dtri(XYP(1, k), XYP(1, l), XYP(1, m),
+     &                            IDEN, FEM_P0, IDEN, FEM_P1, 
+     &                            label, Dbc, DATAFEM, iSYS, 4, 
+     &                            3, G, ir, ic)
 
-          F(k) = F(k) + G(1)
-          F(l) = F(l) + G(2)
-          F(m) = F(m) + G(3)
-        else
-          if (print_mesh_labels) then
-            write (*,'(a, i1, a)') "labelF eq ", 
-     &                             lbF(k), 
-     &                             " neq 1; something's wrong"
-          end if
-        end if
-      End do
+                  F(k) = F(k) + G(1)
+                  F(l) = F(l) + G(2)
+                  F(m) = F(m) + G(3)
+              else
+                  if (print_mesh_labels) then
+                      write (*,'(a, i1, a)') "labelF eq ", 
+     &                    lbF(k), 
+     &                    " neq 1; something's wrong"
+                  end if
+              end if
+          End do
 
-      Return
+          Return
       End
 
 C ======================================================================
@@ -379,34 +379,34 @@ c diffusion tensor K
 C ======================================================================
 
       Integer Function Ddiff(x, y, z, label, DATA, iSYS, Coef)
-      implicit none
-      include 'fem3Dtet.fd'
+          implicit none
+          include 'fem3Dtet.fd'
 
-      Real*8  x, y, z, DATA(*), Coef(9, *)
-      Integer label, iSYS(*)
+          Real*8  x, y, z, DATA(*), Coef(9, *)
+          Integer label, iSYS(*)
 
-      Integer i, j
+          Integer i, j
 
-      Integer thermo_coefficient
-      parameter (thermo_coefficient = 1d0)
-c === should fix it later      
+          Integer thermo_coefficient
+          parameter (thermo_coefficient = 1d0)
+c === probably should fix it later      
 
-      iSYS(1) = 3
-      iSYS(2) = 3
+          iSYS(1) = 3
+          iSYS(2) = 3
 
-      Do i = 1, 3
-         Do j = 1, 3
-            Coef(i, j) = 0D0
-         End do
-      End do
+          Do i = 1, 3
+             Do j = 1, 3
+                Coef(i, j) = 0D0
+             End do
+          End do
 
-      Coef(1, 1) = thermo_coefficient
-      Coef(2, 2) = thermo_coefficient
-      Coef(3, 3) = thermo_coefficient
+          Coef(1, 1) = thermo_coefficient
+          Coef(2, 2) = thermo_coefficient
+          Coef(3, 3) = thermo_coefficient
 
-      Ddiff = TENSOR_SYMMETRIC
+          Ddiff = TENSOR_SYMMETRIC
 
-      Return
+          Return
       End
 
 C ======================================================================
@@ -414,19 +414,19 @@ c Reaction coefficient A
 C ======================================================================
 
       Integer Function Dreact(x, y, z, label, DATA, iSYS, Coef)
-      implicit none
-      include 'fem3Dtet.fd'
+          implicit none
+          include 'fem3Dtet.fd'
 
-      Real*8  x, y, z, DATA(*), Coef(*)
-      Integer label, iSYS(*)
+          Real*8  x, y, z, DATA(*), Coef(*)
+          Integer label, iSYS(*)
 
-      iSYS(1) = 1
-      iSYS(2) = 1
-c     A == 0
-      Coef(1) = 0D0
-      Dreact = TENSOR_SCALAR
+          iSYS(1) = 1
+          iSYS(2) = 1
+c === A == 0
+          Coef(1) = 0D0
+          Dreact = TENSOR_SCALAR
 
-      Return
+          Return
       End
 
 C ======================================================================
@@ -434,24 +434,24 @@ c Boundary conditions
 C ======================================================================
 
       Integer Function Dbc(x, y, z, label, DATA, iSYS, Coef)
-      implicit none
-      Include 'assemble.fd'
+          implicit none
+          Include 'assemble.fd'
 
-      Real*8  x, y, z, DATA(*), Coef(*)
-      Integer label, iSYS(*)
+          Real*8  x, y, z, DATA(*), Coef(*)
+          Integer label, iSYS(*)
 
-      iSYS(1) = 1
-      iSYS(2) = 1
+          iSYS(1) = 1
+          iSYS(2) = 1
 
-      Dbc = BC_NEUMANN
+          Dbc = BC_NEUMANN
 
 c === \int\limits_{\partial\Omega} g_N d S = 1.
 c === where \Omega = [0, 1]^3 
 c === and g_N = const
 
-      Coef(1) = 1d0 / 6d0
+          Coef(1) = 1d0 / 6d0
 
-      Return
+          Return
       End
 
 C ======================================================================
@@ -459,70 +459,68 @@ c Right hand side F
 C ======================================================================
 
       Integer Function Drhs(x, y, z, label, DATA, iSYS, Coef)
-      implicit none
-      Include 'fem3Dtet.fd'
+          implicit none
+          Include 'fem3Dtet.fd'
 
-      Real*8  x, y, z, DATA(*), Coef(*)
-      Integer label, iSYS(21)
-
-      real*8 dirac_value
-      integer nearest_node_index
-
-      real*8 min_dist
-
-      integer tet_nodes(4)
-      logical calculate_dirac
-      integer temp
-
+          Real*8  x, y, z, DATA(*), Coef(*)
+          Integer label, iSYS(*)
+c === local variables
+          integer tet_nodes(4)
+          logical calculate_dirac
+          integer temp
+          real*8 point(3)
+          integer i
 c === too bad
-
-      integer max_mesh_nodes
-      parameter(max_mesh_nodes = 70000)
-
-      real*8  node_coordinates(3, max_mesh_nodes)
-
-      common /vertices/ node_coordinates
-      real*8 point(3)
-      integer i
-
-      real*8 linterpvalue
+          integer max_mesh_nodes
+          parameter(max_mesh_nodes = 70000)
+          real*8  node_coordinates(3, max_mesh_nodes)
+          common /vertices/ node_coordinates
+c === ./dirac.f      
+          real*8 dirac_value
+          integer nearest_node_index
+c === ./lininterp.f
+          real*8 linterpvalue
 c ==========      
 
-      iSYS(1) = 1
-      iSYS(2) = 1
+          iSYS(1) = 1
+          iSYS(2) = 1
 
-      dirac_value = DATA(1)
-      nearest_node_index = DATA(2)
+          dirac_value = DATA(1)
+          nearest_node_index = DATA(2)
 
-      tet_nodes(1 : 4) = iSYS(4 : 7)
+          tet_nodes(1 : 4) = iSYS(4 : 7)
 
-      do i = 1, 4
-        if (tet_nodes(i) .eq. nearest_node_index) then
-          calculate_dirac = .true.
+          calculate_dirac = .false.
 
-          temp = tet_nodes(i)
-          tet_nodes(i) = tet_nodes(4)
-          tet_nodes(4) = temp
-        end if
-      end do
+          do i = 1, 4
+              if (tet_nodes(i) .eq. nearest_node_index) then
+                  calculate_dirac = .true.
+                  
+                  temp = tet_nodes(i)
+                  tet_nodes(i) = tet_nodes(4)
+                  tet_nodes(4) = temp
+                  goto 10
+              end if
+          end do
+ 10       continue
 
-      coef(1) = 0d0
+          coef(1) = 0d0
 
-      if (calculate_dirac) then
-        point(1) = x
-        point(2) = y
-        point(3) = z
-        coef(1) = dirac_value * 
-     &    LInterpValue (node_coordinates(:, tet_nodes(1)), 
-     &                  node_coordinates(:, tet_nodes(2)), 
-     &                  node_coordinates(:, tet_nodes(3)),
-     &                  node_coordinates(:, tet_nodes(4)), 
-     &                  point)
-      end if
+          if (calculate_dirac) then
+              point(1) = x
+              point(2) = y
+              point(3) = z
+              coef(1) = dirac_value * 
+     &            LInterpValue (node_coordinates(:, tet_nodes(1)), 
+     &                          node_coordinates(:, tet_nodes(2)), 
+     &                          node_coordinates(:, tet_nodes(3)),
+     &                          node_coordinates(:, tet_nodes(4)), 
+     &                          point)
+          end if
 
 c      write (*, '(a, 3f6.3)') "drhs is calculated in ", x, y, z
 
-      Drhs = TENSOR_SCALAR
+          Drhs = TENSOR_SCALAR
 
-      Return
+          Return
       End
