@@ -384,35 +384,20 @@ C ======================================================================
 
           Real*8  x, y, z, DATA(*)
 
-c          real*8 Coef(9, *)
           real*8 coef(*)
 
           Integer label, iSYS(*)
 
           Integer i, j
 
-          Integer thermo_coefficient
+          real*8 thermo_coefficient
           parameter (thermo_coefficient = 1d0)
-c === probably should fix it later      
 
-c          iSYS(1) = 3
-c          iSYS(2) = 3
-
-c          Do i = 1, 3
-c             Do j = 1, 3
-c                Coef(i, j) = 0D0
-c             End do
-c          End do
-
-c          Coef(1, 1) = thermo_coefficient
-c          Coef(2, 2) = thermo_coefficient
-c          Coef(3, 3) = thermo_coefficient
           iSYS(1) = 1
           iSYS(2) = 1
 
           coef(1) = thermo_coefficient
 
-c          Ddiff = TENSOR_SYMMETRIC
           Ddiff = TENSOR_SCALAR
 
           Return
@@ -489,6 +474,8 @@ c === ./dirac.f
           logical calculate_dirac
 c === ./lininterp.f
           real*8 linterpvalue
+c === ./pointintet.f
+          logical pointintet
 c ==========      
 
           iSYS(1) = 1
@@ -497,37 +484,47 @@ c ==========
           dirac_value = DATA(1)
           nearest_node_index = DATA(2)
 
+          point(1) = x
+          point(2) = y
+          point(3) = z
+
           tet_nodes(1 : 4) = iSYS(4 : 7)
 
           calculate_dirac = .false.
 
-          do i = 1, 4
-              if (tet_nodes(i) .eq. nearest_node_index) then
-                  calculate_dirac = .true.
-                  
-                  swap_temporary = tet_nodes(i)
-                  tet_nodes(i) = tet_nodes(4)
-                  tet_nodes(4) = swap_temporary
-                  goto 10
-              end if
-          end do
- 10       continue
-
           coef(1) = 0d0
 
-          if (calculate_dirac) then
-              point(1) = x
-              point(2) = y
-              point(3) = z
-              coef(1) = dirac_value * 
+          if (pointintet(node_coordinates(:, tet_nodes(1)),
+     &                   node_coordinates(:, tet_nodes(2)), 
+     &                   node_coordinates(:, tet_nodes(3)),
+     &                   node_coordinates(:, tet_nodes(4)), 
+     &                   point)) then
+
+              do i = 1, 4
+                  if (tet_nodes(i) .eq. nearest_node_index) then
+                      calculate_dirac = .true.
+                      
+                      swap_temporary = tet_nodes(i)
+                      tet_nodes(i) = tet_nodes(4)
+                      tet_nodes(4) = swap_temporary
+                      goto 10
+                  end if
+              end do
+ 10           continue
+
+              if (calculate_dirac) then
+                  
+                  coef(1) = dirac_value * 
      &            LInterpValue (node_coordinates(:, tet_nodes(1)), 
      &                          node_coordinates(:, tet_nodes(2)), 
      &                          node_coordinates(:, tet_nodes(3)),
      &                          node_coordinates(:, tet_nodes(4)), 
      &                          point)
-          end if
-
-c      write (*, '(a, 3f6.3)') "drhs is calculated in ", x, y, z
+              end if
+              write(*, *) "point in tetrahedron"
+          else
+             write(*, *) "point not in tetrahedron"
+          end if 
 
           Drhs = TENSOR_SCALAR
 
