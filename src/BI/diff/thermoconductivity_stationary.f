@@ -396,7 +396,7 @@ C ======================================================================
           iSYS(1) = 1
           iSYS(2) = 1
 
-          coef(1, 1) = thermo_coefficient
+          coef(1, 1) = -thermo_coefficient
 
           Ddiff = TENSOR_SCALAR
 
@@ -443,7 +443,7 @@ c === \int\limits_{\partial\Omega} g_N d S = 1.
 c === where \Omega = [0, 1]^3 
 c === and g_N = const
 
-          Coef(1, 1) = 1d0 / 6d0
+          Coef(1, 1) = -1d0 / 6d0
 
           Return
       End
