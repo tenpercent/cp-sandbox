@@ -384,7 +384,7 @@ C ======================================================================
 
           Real*8  x, y, z, DATA(*)
 
-          real*8 coef(*)
+          real*8 coef(9, *)
 
           Integer label, iSYS(*)
 
@@ -396,7 +396,7 @@ C ======================================================================
           iSYS(1) = 1
           iSYS(2) = 1
 
-          coef(1) = thermo_coefficient
+          coef(1, 1) = thermo_coefficient
 
           Ddiff = TENSOR_SCALAR
 
@@ -411,13 +411,13 @@ C ======================================================================
           implicit none
           include 'fem3Dtet.fd'
 
-          Real*8  x, y, z, DATA(*), Coef(*)
+          Real*8  x, y, z, DATA(*), Coef(9, *)
           Integer label, iSYS(*)
 
           iSYS(1) = 1
           iSYS(2) = 1
 c === A == 0
-          Coef(1) = 0D0
+          Coef(1, 1) = 0D0
           Dreact = TENSOR_SCALAR
 
           Return
@@ -431,7 +431,7 @@ C ======================================================================
           implicit none
           Include 'assemble.fd'
 
-          Real*8  x, y, z, DATA(*), Coef(*)
+          Real*8  x, y, z, DATA(*), Coef(9, *)
           Integer label, iSYS(*)
 
           iSYS(1) = 1
@@ -443,7 +443,7 @@ c === \int\limits_{\partial\Omega} g_N d S = 1.
 c === where \Omega = [0, 1]^3 
 c === and g_N = const
 
-          Coef(1) = 1d0 / 6d0
+          Coef(1, 1) = 1d0 / 6d0
 
           Return
       End
@@ -456,7 +456,7 @@ C ======================================================================
           implicit none
           Include 'fem3Dtet.fd'
 
-          Real*8  x, y, z, DATA(*), Coef(*)
+          Real*8  x, y, z, DATA(*), Coef(9, *)
           Integer label, iSYS(*)
 c === local variables
           integer tet_nodes(4)
@@ -492,9 +492,9 @@ c ==========
 
           calculate_dirac = .false.
 
-          coef(1) = 0d0
+          coef(1, 1) = 0d0
 
-          if (pointintet(node_coordinates(:, tet_nodes(1)),
+          if (PointInTet(node_coordinates(:, tet_nodes(1)),
      &                   node_coordinates(:, tet_nodes(2)), 
      &                   node_coordinates(:, tet_nodes(3)),
      &                   node_coordinates(:, tet_nodes(4)), 
@@ -514,16 +514,16 @@ c ==========
 
               if (calculate_dirac) then
                   
-                  coef(1) = dirac_value * 
+                  coef(1, 1) = dirac_value * 
      &            LInterpValue (node_coordinates(:, tet_nodes(1)), 
      &                          node_coordinates(:, tet_nodes(2)), 
      &                          node_coordinates(:, tet_nodes(3)),
      &                          node_coordinates(:, tet_nodes(4)), 
      &                          point)
               end if
-              write(*, *) "point in tetrahedron"
-          else
-             write(*, *) "point not in tetrahedron"
+c              write(*, *) "point in tetrahedron"
+c          else
+c              write(*, *) "point not in tetrahedron"
           end if 
 
           Drhs = TENSOR_SCALAR

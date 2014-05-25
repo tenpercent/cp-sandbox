@@ -27,6 +27,7 @@ set(DiffThermal_Stationary_SRCS
         thermoconductivity_stationary.f
         lininterp.f
         pointintet.f
+        det.f
         dirac.f
         solver.f
         mmax.fd
