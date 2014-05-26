@@ -104,7 +104,8 @@ c ===   load mesh
      &                fixed_elements,                ! IEV
      &                work_buffer,                   ! iW
      &                work_buffer,                   ! iW
-     &                "../../../../data/cube.ani")   
+     &                "mesh.ani")   
+c     &                "../../../../data/cube.ani")   
         write (*,*) "loadMani has finished!"
 
         do i = 1, total_boundary_faces
@@ -114,7 +115,13 @@ c ===   only neumann boundary conditions
 
         do i = 1, total_mesh_nodes
 c ===   again, no dirichlet boundary condition
-            node_material_labels(i) = 1
+            node_material_labels(i) = 0
+        end do            
+        do i = 1, 1
+c ===   again, no dirichlet boundary condition
+            node_material_labels(face_nodes(1,i)) = 2
+            node_material_labels(face_nodes(2,i)) = 2
+            node_material_labels(face_nodes(3,i)) = 2
         end do            
 
 c === mesh is ready; calculate dirac function
@@ -207,8 +214,8 @@ c ===   launch solver
         write (*,*) "LSolver has finished!"
 
 c ===   write results to VTK file
-        call GMVscalarTet(sle_solution, 
-     &                    "mesh.vtk", 
+        call GMVscalarVRT(sle_solution, 
+     &                    "mesh.gmv", 
      &                    10,
      &                    total_mesh_nodes,
      &                    node_coordinates, 
@@ -352,6 +359,7 @@ c === iterate through faces
 
                   ibc = Dbc(x, y, z, lbF(k), DATAFEM, iSYS, eBC)
                    
+            If(ibc .EQ. BC_NEUMANN) Then
                   label = lbF(k)
 
                   Call fem3Dtri(XYP(1, k), XYP(1, l), XYP(1, m),
@@ -362,6 +370,7 @@ c === iterate through faces
                   F(k) = F(k) + G(1)
                   F(l) = F(l) + G(2)
                   F(m) = F(m) + G(3)
+            End if
               else
                   if (print_mesh_labels) then
                       write (*,'(a, i1, a)') "labelF eq ", 
@@ -370,6 +379,21 @@ c === iterate through faces
                   end if
               end if
           End do
+
+c ... impose Dirichlet boundary conditions at triangle nodes
+c     this condition should go the last one
+      Do k = 1, 4
+         If(lbP(k) .NE. 0) Then
+            x = XYP(1, k)
+            y = XYP(2, k)
+            z = XYP(3, k)!
+            ibc = Dbc(x, y, z, lbP(k), DATAFEM, iSYS, eBC)
+
+            If(ibc .EQ. BC_DIRICHLET) Then
+               Call applyDIR(LDA, nRow, A, F, k, eBC(1))
+            End if
+         End if
+      End do
 
           Return
       End
@@ -396,7 +420,7 @@ C ======================================================================
           iSYS(1) = 1
           iSYS(2) = 1
 
-          coef(1, 1) = -thermo_coefficient
+          coef(1, 1) = thermo_coefficient
 
           Ddiff = TENSOR_SCALAR
 
@@ -431,19 +455,33 @@ C ======================================================================
           implicit none
           Include 'assemble.fd'
 
-          Real*8  x, y, z, DATA(*), Coef(9, *)
+          Real*8  x, y, z, DATA(*), Coef(*)
           Integer label, iSYS(*)
 
           iSYS(1) = 1
           iSYS(2) = 1
 
-          Dbc = BC_NEUMANN
+c          Dbc = BC_NEUMANN
+          Dbc = BC_DIRICHLET
 
 c === \int\limits_{\partial\Omega} g_N d S = 1.
 c === where \Omega = [0, 1]^3 
 c === and g_N = const
 
-          Coef(1, 1) = -1d0 / 6d0
+c          Coef(1, 1) = -1d0 / 6d0
+          if (label.eq.1)  Then
+              Coef(1) = -1d0 / 3.14159265359
+              Dbc = BC_NEUMANN
+          end if
+          if (label.eq.2)  Then
+              Coef(1) = 10d0
+              Dbc = BC_DIRICHLET
+          end if
+          if (label.eq.0) Then
+              Coef(1) = 1d0
+              write(*,*) "label = 0 in Dbc"
+              Dbc = BC_DIRICHLET
+          end if
 
           Return
       End
